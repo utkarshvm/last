@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Student Smart Hub — Community + Team Finder</title>
+    <link rel="stylesheet" href="community.css" />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-..."
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container" id="app">
+      <header>
+        <div class="brand">
+          <div class="logo">SSH</div>
+          <div>
+            <h1>Student Smart Hub</h1>
+            <p class="lead">Community • Team Finder • Events</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="notif-panel">
+            <button class="icon-btn" id="notifBtn" title="Notifications">
+              <i class="fa-regular fa-bell"></i>
+              <span
+                id="notifCount"
+                style="font-size: 11px; margin-left: 6px; color: var(--muted)"
+                >0</span
+              >
+            </button>
+            <div class="notif-list" id="notifList"></div>
+          </div>
+
+          <button class="btn" id="toggleTheme">
+            <i class="fa-regular fa-moon"></i> Toggle
+          </button>
+          <button class="btn ghost" id="exportCSV">
+            <i class="fa-solid fa-download"></i> Export Team CSV
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="left">
+          <!-- Forum & Posts -->
+          <section class="card" id="forumCard">
+            <h2>📝 Forum & Posts</h2>
+            <div class="forum-tools">
+              <div style="display: flex; gap: 10px; align-items: center">
+                <div class="search">
+                  <i
+                    class="fa-solid fa-magnifying-glass"
+                    style="color: var(--muted)"
+                  ></i>
+                  <input placeholder="Search posts..." id="postSearch" />
+                </div>
+
+                <div class="tag-list" id="forumTags">
+                  <!-- tags injected -->
+                </div>
+              </div>
+
+              <div class="flex">
+                <button class="btn ghost" id="composeToggle">
+                  <i class="fa-solid fa-pen"></i> New Post
+                </button>
+                <span class="mini">Sort:</span>
+                <select
+                  id="sortPosts"
+                  class="mini"
+                  style="
+                    background: transparent;
+                    border: 1px solid rgba(255, 255, 255, 0.03);
+                    padding: 6px;
+                    border-radius: 8px;
+                    color: var(--text);
+                  "
+                >
+                  <option value="trending">Trending</option>
+                  <option value="recent">Most Recent</option>
+                  <option value="pinned">Pinned First</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="composeArea" style="margin-top: 12px; display: none">
+              <div class="compose">
+                <div style="width: 44px" class="avatar">U</div>
+                <div style="flex: 1">
+                  <input
+                    id="postTitle"
+                    placeholder="Post title"
+                    style="
+                      width: 100%;
+                      padding: 8px;
+                      border-radius: 8px;
+                      border: 1px solid rgba(255, 255, 255, 0.03);
+                      background: transparent;
+                      color: var(--text);
+                    "
+                  />
+                  <textarea
+                    id="postBody"
+                    placeholder="Write your post (supports **bold**, *italic*, `code`, [link](https://...), # Heading)"
+                  ></textarea>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      margin-top: 8px;
+                      align-items: center;
+                    "
+                  >
+                    <label
+                      ><input type="checkbox" id="postAnon" /> Post
+                      anonymously</label
+                    >
+                    <div style="flex: 1"></div>
+                    <select
+                      id="postTag"
+                      style="
+                        padding: 6px;
+                        border-radius: 8px;
+                        background: transparent;
+                        border: 1px solid rgba(255, 255, 255, 0.03);
+                        color: var(--text);
+                      "
+                    >
+                      <option value="General">General</option>
+                      <option value="Projects">Projects</option>
+                      <option value="Events">Events</option>
+                      <option value="Help">Help</option>
+                      <option value="Announcements">Announcements</option>
+                    </select>
+                    <button class="btn" id="postSubmit">Post</button>
+                  </div>
+                </div>
+                <div class="right">
+                  <label><input type="checkbox" id="postPin" /> Pin post</label>
+                  <div class="muted" style="font-size: 12px">Preview</div>
+                  <div
+                    id="postPreview"
+                    style="
+                      padding: 8px;
+                      border-radius: 8px;
+                      background: rgba(255, 255, 255, 0.02);
+                      min-height: 60px;
+                      color: var(--muted);
+                      overflow: auto;
+                    "
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="postsList" style="margin-top: 12px">
+              <!-- posts inserted here -->
+            </div>
+          </section>
+
+          <!-- Team Finder -->
+          <section class="card" id="teamCard">
+            <h2>👥 Team Finder</h2>
+            <div
+              style="
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                flex-wrap: wrap;
+              "
+            >
+              <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                  placeholder="Search students by name..."
+                  id="studentSearch"
+                />
+              </div>
+
+              <div id="skillFilters" class="tag-list"></div>
+
+              <select
+                id="availabilityFilter"
+                style="
+                  padding: 6px;
+                  border-radius: 8px;
+                  background: transparent;
+                  border: 1px solid rgba(255, 255, 255, 0.03);
+                  color: var(--text);
+                "
+              >
+                <option value="all">All Availability</option>
+                <option value="Available">Available</option>
+                <option value="Busy">Busy</option>
+                <option value="Open to Collab">Open to Collab</option>
+              </select>
+
+              <select
+                id="sortStudents"
+                style="
+                  padding: 6px;
+                  border-radius: 8px;
+                  background: transparent;
+                  border: 1px solid rgba(255, 255, 255, 0.03);
+                  color: var(--text);
+                "
+              >
+                <option value="recent">Recently Active</option>
+                <option value="name">Name A→Z</option>
+                <option value="skills">Most Skills</option>
+              </select>
+            </div>
+
+            <div class="finder-grid" id="studentsGrid">
+              <!-- student cards -->
+            </div>
+          </section>
+
+          <!-- Events & Opportunities -->
+          <section class="card" id="eventsCard">
+            <h2>📅 Events & Opportunities</h2>
+
+            <div
+              id="upcomingEvents"
+              style="margin-top: 8px; display: grid; gap: 10px"
+            ></div>
+
+            <h3 style="margin-top: 14px; font-size: 14px">📷 Past Events</h3>
+            <div
+              id="pastEvents"
+              style="display: flex; gap: 10px; margin-top: 8px; overflow: auto"
+            ></div>
+          </section>
+
+          <!-- Achievements & Recognition -->
+          <section class="card" id="achieveCard">
+            <h2>📜 Achievements & Recognition</h2>
+            <div
+              style="
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <div>
+                <div class="mini muted">Leaderboard — Top contributors</div>
+                <div id="leaderboard" style="margin-top: 8px"></div>
+              </div>
+
+              <div style="min-width: 220px">
+                <div class="mini muted">Upload Certificate</div>
+                <div
+                  style="
+                    display: flex;
+                    gap: 8px;
+                    margin-top: 8px;
+                    align-items: center;
+                  "
+                >
+                  <input type="file" id="certUpload" />
+                  <button class="btn ghost" id="verifyCertBtn">Verify</button>
+                </div>
+                <div id="certList" style="margin-top: 8px"></div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <!-- Analytics -->
+          <section class="card">
+            <h2>📊 Analytics & Insights</h2>
+            <div style="margin-top: 10px">
+              <canvas id="chartSkills" height="120"></canvas>
+            </div>
+            <div style="margin-top: 10px">
+              <canvas id="chartEngagement" height="120"></canvas>
+            </div>
+          </section>
+
+          <!-- Profile & small features -->
+          <section class="card">
+            <h2>🔒 Utilities</h2>
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 8px;
+              "
+            >
+              <button class="btn ghost" id="openRoster">
+                Open Team Roster
+              </button>
+              <button class="btn ghost" id="viewProfiles">View Profiles</button>
+              <div class="mini muted">Mode</div>
+              <div style="display: flex; gap: 8px">
+                <button class="btn" id="lightModeBtn">Light</button>
+                <button class="btn ghost" id="darkModeBtn">Dark</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Quick Tips</h2>
+            <ul
+              class="muted mini"
+              style="margin: 0 0 0 14px; padding: 8px 0 0 0"
+            >
+              <li>Use tags to find relevant posts or teammates.</li>
+              <li>Pin important posts so they stay visible.</li>
+              <li>Use anonymous posting for sensitive questions.</li>
+            </ul>
+          </section>
+        </aside>
+      </main>
+
+      <!-- DM Modal -->
+      <div class="modal" id="chatModal" role="dialog">
+        <div class="header">
+          <div style="display: flex; gap: 10px; align-items: center">
+            <div class="avatar" id="chatAvatar">U</div>
+            <div>
+              <div id="chatToName" style="font-weight: 700">User</div>
+              <div id="chatToStatus" class="mini muted">Available</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <button class="icon-btn" id="closeChat">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <!-- messages -->
+        </div>
+
+        <div class="chat-input">
+          <input id="chatInput" placeholder="Type a message..." />
+          <button class="btn" id="sendChat">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /***********************
+       * Dummy data
+       ***********************/
+      const samplePosts = [
+        {
+          id: 1,
+          author: "Aisha R",
+          title: "Looking for ML teammates for hackathon",
+          body: "We are building a model to classify agricultural pests. **Python**, *PyTorch*, data wrangling needed. DM if interested.",
+          tags: ["Projects", "Help"],
+          likes: 12,
+          pinned: false,
+          anon: false,
+          createdAt: Date.now() - 1000 * 60 * 60 * 6,
+        },
+        {
+          id: 2,
+          author: "Anonymous",
+          title: "Need guidance on internship resume",
+          body: "Can someone review my resume? Here's a snippet: `• Built REST APIs`",
+          tags: ["Help"],
+          likes: 24,
+          pinned: true,
+          anon: true,
+          createdAt: Date.now() - 1000 * 60 * 60 * 24,
+        },
+        {
+          id: 3,
+          author: "Rohan",
+          title: "Cultural fest volunteers needed",
+          body: "We need 10 volunteers for stage management. RSVP here. [Signup](https://example.com)",
+          tags: ["Events", "Announcements"],
+          likes: 5,
+          pinned: false,
+          anon: false,
+          createdAt: Date.now() - 1000 * 60 * 30,
+        },
+      ];
+
+      const students = [
+        {
+          id: 1,
+          name: "Aisha R",
+          skills: ["Python", "ML", "Data"],
+          avail: "Available",
+          lastActive: Date.now() - 1000 * 60 * 20,
+          bio: "ML student, loves datasets.",
+          avatar: "AR",
+          badges: ["Helper"],
+        },
+        {
+          id: 2,
+          name: "Rohan S",
+          skills: ["React", "Node", "UI"],
+          avail: "Busy",
+          lastActive: Date.now() - 1000 * 60 * 60 * 5,
+          bio: "Frontend dev",
+          avatar: "RS",
+          badges: ["Team Player"],
+        },
+        {
+          id: 3,
+          name: "Maya T",
+          skills: ["Design", "Figma", "HTML"],
+          avail: "Open to Collab",
+          lastActive: Date.now() - 1000 * 60 * 10,
+          bio: "Designer & illustrator",
+          avatar: "MT",
+          badges: ["Mentor", "Helper"],
+        },
+        {
+          id: 4,
+          name: "Vikram",
+          skills: ["Python", "DevOps"],
+          avail: "Available",
+          lastActive: Date.now() - 1000 * 60 * 60 * 26,
+          bio: "Loves infra and automation",
+          avatar: "V",
+          badges: [],
+        },
+        {
+          id: 5,
+          name: "Zara",
+          skills: ["ML", "UI", "Data"],
+          avail: "Open to Collab",
+          lastActive: Date.now() - 1000 * 60 * 40,
+          bio: "Fullstack + ML",
+          avatar: "Z",
+          badges: ["Team Player"],
+        },
+      ];
+
+      const events = [
+        {
+          id: 1,
+          title: "Campus Hackathon",
+          date: "2025-09-20",
+          desc: "48h hackathon",
+          rsvp: 12,
+          teams: 3,
+          img: "https://picsum.photos/seed/hack1/300/180",
+        },
+        {
+          id: 2,
+          title: "Design Workshop",
+          date: "2025-09-05",
+          desc: "UI/UX fundamentals",
+          rsvp: 24,
+          teams: 0,
+          img: "https://picsum.photos/seed/work1/300/180",
+        },
+        {
+          id: 3,
+          title: "Cultural Night",
+          date: "2025-08-20",
+          desc: "Past event",
+          rsvp: 200,
+          teams: 15,
+          img: "https://picsum.photos/seed/cult1/200/120",
+          past: true,
+          winners: ["Team A", "Team B"],
+          highlights: "Great performances & prizes.",
+        },
+      ];
+
+      let notifications = [];
+      let posts = [...samplePosts];
+      let certs = [];
+
+      /***********************
+       * Utilities
+       ***********************/
+      const $ = (sel) => document.querySelector(sel);
+      const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+      function timeAgo(ts) {
+        const s = Math.floor((Date.now() - ts) / 1000);
+        if (s < 60) return `${s}s`;
+        const m = Math.floor(s / 60);
+        if (m < 60) return `${m}m`;
+        const h = Math.floor(m / 60);
+        if (h < 24) return `${h}h`;
+        const d = Math.floor(h / 24);
+        return `${d}d`;
+      }
+
+      // Simple markdown-like parser (bold, italic, code, links, # heading)
+      function mdToHtml(text) {
+        if (!text) return "";
+        // escape HTML
+        const esc = text
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+        // headings
+        let out = esc.replace(
+          /^# (.*$)/gim,
+          '<div style="font-weight:800;font-size:15px">$1</div>'
+        );
+        // bold
+        out = out.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+        // italic
+        out = out.replace(/\*(.+?)\*/g, "<em>$1</em>");
+        // code
+        out = out.replace(
+          /`(.+?)`/g,
+          '<code style="background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px">$1</code>'
+        );
+        // links
+        out = out.replace(
+          /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+          '<a href="$2" target="_blank" style="color:var(--accent)">$1</a>'
+        );
+        // newlines
+        out = out.replace(/\n/g, "<br/>");
+        return out;
+      }
+
+      /***********************
+       * Notifications
+       ***********************/
+      function pushNotification(text) {
+        notifications.unshift({ id: Date.now(), text, seen: false });
+        renderNotifs();
+        $("#notifCount").textContent = notifications.filter(
+          (n) => !n.seen
+        ).length;
+        // small alert
+        const ndiv = document.createElement("div");
+        ndiv.className = "card";
+        ndiv.style.position = "fixed";
+        ndiv.style.right = "18px";
+        ndiv.style.bottom = "18px";
+        ndiv.style.zIndex = 200;
+        ndiv.style.padding = "12px";
+        ndiv.style.minWidth = "220px";
+        ndiv.innerHTML = `<strong>Notification</strong><div style="margin-top:6px">${text}</div>`;
+        document.body.appendChild(ndiv);
+        setTimeout(() => ndiv.remove(), 3500);
+      }
+
+      function renderNotifs() {
+        const list = $("#notifList");
+        list.innerHTML = notifications
+          .map(
+            (n) =>
+              `<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,0.02)">${n.text}</div>`
+          )
+          .join("");
+      }
+
+      $("#notifBtn").addEventListener("click", () => {
+        $("#notifList").classList.toggle("show");
+      });
+
+      /***********************
+       * Forum Rendering & Logic
+       ***********************/
+      const forumTagSet = [
+        "All",
+        "Projects",
+        "Events",
+        "Help",
+        "Announcements",
+        "General",
+      ];
+      const forumTagsContainer = $("#forumTags");
+
+      function renderForumTags() {
+        forumTagsContainer.innerHTML = forumTagSet
+          .map(
+            (t) =>
+              `<div class="tag ${
+                t === "All" ? "active" : ""
+              }" data-tag="${t}">${t}</div>`
+          )
+          .join("");
+        forumTagsContainer.querySelectorAll(".tag").forEach((el) => {
+          el.addEventListener("click", () => {
+            forumTagsContainer
+              .querySelectorAll(".tag")
+              .forEach((x) => x.classList.remove("active"));
+            el.classList.add("active");
+            renderPosts();
+          });
+        });
+      }
+
+      function renderPosts() {
+        const query = $("#postSearch").value.trim().toLowerCase();
+        const activeTag =
+          forumTagsContainer.querySelector(".tag.active")?.dataset.tag || "All";
+        const sort = $("#sortPosts").value;
+
+        let list = posts.slice();
+
+        if (activeTag && activeTag !== "All") {
+          list = list.filter((p) => p.tags.includes(activeTag));
+        }
+        if (query)
+          list = list.filter((p) =>
+            (p.title + p.body + p.author).toLowerCase().includes(query)
+          );
+
+        // Sorting
+        if (sort === "trending") {
+          list.sort((a, b) => b.likes - a.likes);
+        } else if (sort === "recent") {
+          list.sort((a, b) => b.createdAt - a.createdAt);
+        } else if (sort === "pinned") {
+          list.sort(
+            (a, b) =>
+              (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) ||
+              b.createdAt - a.createdAt
+          );
+        }
+
+        // pinned first always when toggled by pinned sort or default
+        const html = list
+          .map((p) => {
+            const author = p.anon ? "Anonymous" : p.author;
+            return `
+          <div class="post" data-id="${p.id}">
+            <div>
+              <div class="meta">
+                <div class="avatar">${(
+                  author.charAt(0) || "U"
+                ).toUpperCase()}</div>
+                <div style="flex:1">
+                  <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                      <div class="title">${p.title} ${
+              p.pinned
+                ? '<span class="pin" title="Pinned"><i class="fa-solid fa-thumbtack"></i></span>'
+                : ""
+            }</div>
+                      <div class="muted" style="font-size:12px">${author} • ${timeAgo(
+              p.createdAt
+            )} ago • ${p.tags
+              .map((t) => `<span class="badge">${t}</span>`)
+              .join(" ")}</div>
+                    </div>
+                    <div class="muted mini">${
+                      p.likes
+                    } <i class="fa-solid fa-heart" style="color:var(--accent)"></i></div>
+                  </div>
+                  <div class="body">${mdToHtml(p.body)}</div>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="like-btn" data-like="${
+                p.id
+              }" title="Like"><i class="fa-solid fa-heart"></i> ${
+              p.likes
+            }</button>
+              <button class="like-btn" data-pin="${
+                p.id
+              }" title="Pin/Unpin"><i class="fa-solid fa-thumbtack"></i></button>
+            </div>
+          </div>
+        `;
+          })
+          .join("");
+
+        $("#postsList").innerHTML =
+          html || '<div class="muted">No posts found.</div>';
+
+        // attach like events
+        $$("[data-like]").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const id = +btn.dataset.like;
+            const p = posts.find((x) => x.id === id);
+            p.likes++;
+            renderPosts();
+            pushNotification(`+1 like on "${p.title}"`);
+          });
+        });
+
+        // attach pin events
+        $$("[data-pin]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = +btn.dataset.pin;
+            const p = posts.find((x) => x.id === id);
+            p.pinned = !p.pinned;
+            renderPosts();
+            pushNotification(
+              `${p.pinned ? "Pinned" : "Unpinned"} "${p.title}"`
+            );
+          });
+        });
+      }
+
+      // Compose logic
+      $("#composeToggle").addEventListener("click", () => {
+        $("#composeArea").style.display =
+          $("#composeArea").style.display === "none" ? "block" : "none";
+      });
+
+      $("#postBody").addEventListener("input", () => {
+        $("#postPreview").innerHTML = mdToHtml($("#postBody").value);
+      });
+
+      $("#postSubmit").addEventListener("click", () => {
+        const title = $("#postTitle").value.trim();
+        const body = $("#postBody").value.trim();
+        const tag = $("#postTag").value;
+        const anon = $("#postAnon").checked;
+        const pin = $("#postPin").checked;
+        if (!title || !body) {
+          alert("Title and body are required");
+          return;
+        }
+
+        const post = {
+          id: Date.now(),
+          author: anon ? "Anonymous" : "You",
+          title,
+          body,
+          tags: [tag],
+          likes: 0,
+          pinned: pin,
+          anon,
+          createdAt: Date.now(),
+        };
+        posts.unshift(post);
+        $("#postTitle").value = "";
+        $("#postBody").value = "";
+        $("#postPreview").innerHTML = "";
+        $("#postPin").checked = false;
+        $("#postAnon").checked = false;
+        renderPosts();
+        pushNotification("New post created");
+      });
+
+      $("#postSearch").addEventListener("input", renderPosts);
+      $("#sortPosts").addEventListener("change", renderPosts);
+
+      /***********************
+       * Team Finder logic
+       ***********************/
+      const skillSet = Array.from(
+        new Set(students.flatMap((s) => s.skills))
+      ).sort();
+      function renderSkillFilters() {
+        $("#skillFilters").innerHTML = skillSet
+          .map((s) => `<div class="tag" data-skill="${s}">${s}</div>`)
+          .join("");
+        $("#skillFilters")
+          .querySelectorAll(".tag")
+          .forEach((t) => {
+            t.addEventListener("click", () => {
+              t.classList.toggle("active");
+              renderStudents();
+            });
+          });
+      }
+
+      function renderStudents() {
+        const q = $("#studentSearch").value.trim().toLowerCase();
+        const activeSkills = Array.from(
+          $("#skillFilters").querySelectorAll(".tag.active")
+        ).map((t) => t.dataset.skill);
+        const avail = $("#availabilityFilter").value;
+        const sort = $("#sortStudents").value;
+
+        let arr = students.slice();
+        if (q)
+          arr = arr.filter(
+            (s) =>
+              s.name.toLowerCase().includes(q) ||
+              s.skills.join(" ").toLowerCase().includes(q)
+          );
+        if (activeSkills.length)
+          arr = arr.filter((s) =>
+            activeSkills.every((sk) => s.skills.includes(sk))
+          );
+        if (avail !== "all") arr = arr.filter((s) => s.avail === avail);
+
+        if (sort === "recent") arr.sort((a, b) => b.lastActive - a.lastActive);
+        else if (sort === "name")
+          arr.sort((a, b) => a.name.localeCompare(b.name));
+        else if (sort === "skills")
+          arr.sort((a, b) => b.skills.length - a.skills.length);
+
+        $("#studentsGrid").innerHTML = arr
+          .map((s) => {
+            return `
+          <div class="student-card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="display:flex;gap:10px;align-items:center">
+                <div class="avatar">${s.avatar}</div>
+                <div>
+                  <div style="font-weight:700">${s.name}</div>
+                  <div class="muted mini">${s.bio}</div>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div class="status ${
+                  s.avail === "Available"
+                    ? "available"
+                    : s.avail === "Busy"
+                    ? "busy"
+                    : "open"
+                }">${s.avail}</div>
+                <div class="muted mini" style="margin-top:6px">Active ${timeAgo(
+                  s.lastActive
+                )} ago</div>
+              </div>
+            </div>
+
+            <div class="skills">
+              ${s.skills
+                .map((sk) => `<span class="skill-tag">${sk}</span>`)
+                .join(" ")}
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:10px;align-items:center;justify-content:space-between">
+              <button class="btn ghost dm-btn" data-id="${
+                s.id
+              }"><i class="fa-solid fa-message"></i> Message</button>
+              <div style="display:flex;gap:8px">
+                ${s.badges
+                  .map((b) => `<span class="badge">${b}</span>`)
+                  .join(" ")}
+              </div>
+            </div>
+          </div>
+        `;
+          })
+          .join("");
+        // attach dm events
+        $$(".dm-btn").forEach((b) => {
+          b.addEventListener("click", () => openChat(+b.dataset.id));
+        });
+      }
+
+      // Chat logic
+      const chats = {}; // chats per student id
+      function openChat(studId) {
+        const s = students.find((x) => x.id === studId);
+        $("#chatModal").classList.add("show");
+        $("#chatToName").textContent = s.name;
+        $("#chatAvatar").textContent = s.avatar;
+        $("#chatToStatus").textContent = s.avail;
+        currentChatId = studId;
+        renderChatMessages();
+      }
+      let currentChatId = null;
+
+      $("#closeChat").addEventListener("click", () =>
+        $("#chatModal").classList.remove("show")
+      );
+      $("#sendChat").addEventListener("click", sendChatMessage);
+      $("#chatInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendChatMessage();
+      });
+
+      function sendChatMessage() {
+        const text = $("#chatInput").value.trim();
+        if (!text || !currentChatId) return;
+        chats[currentChatId] = chats[currentChatId] || [];
+        chats[currentChatId].push({ from: "You", text, ts: Date.now() });
+        $("#chatInput").value = "";
+        renderChatMessages();
+        pushNotification(
+          `Message sent to ${students.find((s) => s.id === currentChatId).name}`
+        );
+      }
+
+      function renderChatMessages() {
+        const box = $("#chatMessages");
+        const arr = chats[currentChatId] || [];
+        box.innerHTML = arr
+          .map(
+            (m) =>
+              `<div style="margin-bottom:8px"><div style="font-size:12px;color:var(--muted)">${
+                m.from
+              } · ${timeAgo(
+                m.ts
+              )}</div><div style="background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;margin-top:4px">${
+                m.text
+              }</div></div>`
+          )
+          .join("");
+        box.scrollTop = box.scrollHeight;
+      }
+
+      /***********************
+       * Events rendering
+       ***********************/
+      function renderEvents() {
+        $("#upcomingEvents").innerHTML = events
+          .filter((e) => !e.past)
+          .map((ev) => {
+            return `
+          <div style="display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)">
+            <img src="${ev.img}" width="120" height="70" style="border-radius:8px;object-fit:cover" />
+            <div style="flex:1">
+              <div style="font-weight:700">${ev.title} <span class="muted mini">• ${ev.date}</span></div>
+              <div class="muted mini">${ev.desc}</div>
+              <div style="margin-top:8px;display:flex;gap:8px">
+                <button class="btn ghost rsvp-btn" data-id="${ev.id}">RSVP (${ev.rsvp})</button>
+                <button class="btn" data-team="${ev.id}">Team Register</button>
+              </div>
+            </div>
+          </div>
+        `;
+          })
+          .join("");
+
+        $("#pastEvents").innerHTML = events
+          .filter((e) => e.past)
+          .map(
+            (ev) => `
+         <div style="min-width:220px;border-radius:10px;overflow:hidden">
+           <img src="${
+             ev.img
+           }" width="220" height="120" style="display:block;object-fit:cover" />
+           <div style="padding:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)">
+             <div style="font-weight:700">${ev.title}</div>
+             <div class="muted mini">${ev.highlights || ev.desc}</div>
+           </div>
+         </div>
+      `
+          )
+          .join("");
+
+        // attach rsvp
+        $$(".rsvp-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = +btn.dataset.id;
+            const ev = events.find((e) => e.id === id);
+            ev.rsvp++;
+            renderEvents();
+            pushNotification(`You RSVPed for "${ev.title}"`);
+          });
+        });
+
+        // team register
+        $$("[data-team]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = +btn.dataset.team;
+            const teamName = prompt("Enter team name to register:");
+            if (teamName) {
+              const ev = events.find((e) => e.id === id);
+              ev.teams++;
+              renderEvents();
+              pushNotification(`Team "${teamName}" registered for ${ev.title}`);
+            }
+          });
+        });
+      }
+
+      /***********************
+       * Achievements & Certificates
+       ***********************/
+      function renderLeaderboard() {
+        // compute contributions roughly by likes across posts per author (including students)
+        const scoreMap = {};
+        posts.forEach((p) => {
+          const name = p.anon ? "Anonymous" : p.author;
+          scoreMap[name] =
+            (scoreMap[name] || 0) + p.likes + (p.pinned ? 10 : 0) + 1;
+        });
+        // include students badges
+        students.forEach((s) => {
+          scoreMap[s.name] = (scoreMap[s.name] || 0) + s.badges.length * 3;
+        });
+
+        const arr = Object.entries(scoreMap)
+          .map(([name, score]) => ({ name, score }))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 5);
+        $("#leaderboard").innerHTML = `<ol style="margin:8px 0 0 16px">${arr
+          .map(
+            (r) =>
+              `<li style="margin-bottom:6px">${r.name} — <strong>${r.score} pts</strong></li>`
+          )
+          .join("")}</ol>`;
+      }
+
+      $("#certUpload").addEventListener("change", (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        certs.push({ id: Date.now(), name: f.name, verified: false });
+        renderCerts();
+        pushNotification(`Certificate "${f.name}" uploaded`);
+      });
+
+      function renderCerts() {
+        $("#certList").innerHTML = certs
+          .map(
+            (c) =>
+              `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px;border-radius:8px;background:rgba(255,255,255,0.02);margin-top:6px">${
+                c.name
+              } <div>${
+                c.verified
+                  ? '<i class="fa-solid fa-shield-check" style="color:var(--success)"></i> Verified'
+                  : '<i class="fa-regular fa-circle" style="color:var(--muted)"></i>'
+              }</div></div>`
+          )
+          .join("");
+      }
+
+      $("#verifyCertBtn").addEventListener("click", () => {
+        if (certs.length === 0) {
+          alert("No certificates uploaded");
+          return;
+        }
+        // simple toggle verify last one to simulate verification
+        const c = certs[certs.length - 1];
+        c.verified = !c.verified;
+        renderCerts();
+        pushNotification(
+          `${c.name} ${c.verified ? "verified" : "verification removed"}`
+        );
+      });
+
+      /***********************
+       * Analytics (Chart.js)
+       ***********************/
+      function renderCharts() {
+        // Skills trending
+        const counts = {};
+        students.forEach((s) =>
+          s.skills.forEach((k) => (counts[k] = (counts[k] || 0) + 1))
+        );
+        const labels = Object.keys(counts);
+        const data = Object.values(counts);
+
+        const ctx1 = document.getElementById("chartSkills").getContext("2d");
+        new Chart(ctx1, {
+          type: "bar",
+          data: { labels, datasets: [{ label: "Students with skill", data }] },
+          options: {
+            plugins: { legend: { display: false } },
+            responsive: true,
+            maintainAspectRatio: false,
+          },
+        });
+
+        // Engagement
+        const topPosts = posts.sort((a, b) => b.likes - a.likes).slice(0, 5);
+        const ctx2 = document
+          .getElementById("chartEngagement")
+          .getContext("2d");
+        new Chart(ctx2, {
+          type: "pie",
+          data: {
+            labels: topPosts.map((p) => p.title.slice(0, 12)),
+            datasets: [{ data: topPosts.map((p) => p.likes) }],
+          },
+          options: {
+            plugins: { legend: { position: "bottom" } },
+            responsive: true,
+            maintainAspectRatio: false,
+          },
+        });
+      }
+
+      /***********************
+       * CSV Export (team roster)
+       ***********************/
+      $("#exportCSV").addEventListener("click", () => {
+        // Export currently filtered students grid (as displayed)
+        // create CSV
+        const rows = [
+          ["Name", "Skills", "Availability", "Last Active", "Badges"],
+        ];
+        const nodes = $("#studentsGrid").children;
+        // fallback to all students if grid empty
+        let arr;
+        if (nodes.length === 0) arr = students;
+        else {
+          arr = Array.from(nodes)
+            .map((n) => {
+              const name = n
+                .querySelector(".avatar")
+                .nextElementSibling.querySelector("div")
+                .textContent.trim();
+              // find student by name
+              return students.find((s) => s.name === name);
+            })
+            .filter(Boolean);
+        }
+        arr.forEach((s) =>
+          rows.push([
+            s.name,
+            s.skills.join("|"),
+            s.avail,
+            new Date(s.lastActive).toISOString(),
+            s.badges.join("|"),
+          ])
+        );
+
+        const csv = rows
+          .map((r) =>
+            r.map((c) => `"${(c + "").replaceAll('"', '""')}"`).join(",")
+          )
+          .join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "team_roster.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+        pushNotification("Team roster CSV exported");
+      });
+
+      /***********************
+       * Theme toggles
+       ***********************/
+      $("#toggleTheme").addEventListener("click", () => {
+        document.body.classList.toggle("light");
+      });
+      $("#lightModeBtn").addEventListener("click", () =>
+        document.body.classList.add("light")
+      );
+      $("#darkModeBtn").addEventListener("click", () =>
+        document.body.classList.remove("light")
+      );
+
+      /***********************
+       * Small UI bindings & init
+       ***********************/
+      // quick open roster / profiles
+      $("#openRoster").addEventListener("click", () =>
+        alert("Roster opens in a new view (simulate).")
+      );
+      $("#viewProfiles").addEventListener("click", () =>
+        alert("Profiles listing (simulate).")
+      );
+
+      // initial render
+      renderForumTags();
+      renderPosts();
+      renderSkillFilters();
+      renderStudents();
+      renderEvents();
+      renderLeaderboard();
+      renderCerts();
+      renderCharts();
+      renderNotifs();
+
+      // simulate some notifications
+      setTimeout(() => pushNotification("Welcome to Student Smart Hub!"), 600);
+      setTimeout(() => pushNotification("You have 2 new messages"), 2000);
+
+      // recompute leaderboard when posts change
+      const originalRenderPosts = renderPosts;
+      renderPosts = function () {
+        originalRenderPosts();
+        renderLeaderboard();
+        renderCharts();
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Hub — Mentor Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="mentor.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="logo">
+          <div class="logo-badge">SH</div>
+          <h1>Student Hub</h1>
+        </div>
+
+        <div class="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <input
+            id="globalSearch"
+            placeholder="Search students, events, projects"
+          />
+        </div>
+
+        <nav class="nav">
+          <button class="tabBtn active" data-tab="dashboard" title="Dashboard">
+            <span>🏠</span>
+            <span class="text">Dashboard</span>
+          </button>
+          <button class="tabBtn" data-tab="events" title="Events">
+            <span>🏁</span>
+            <span class="text">Events & Hackathons</span>
+          </button>
+          <button class="tabBtn" data-tab="chat" title="Chat">
+            <span>💬</span>
+            <span class="text">Chat</span>
+          </button>
+          <button class="tabBtn" data-tab="projects" title="Projects">
+            <span>🧪</span>
+            <span class="text">Projects & Assessment</span>
+          </button>
+          <button class="tabBtn" data-tab="settings" title="Settings">
+            <span>⚙️</span>
+            <span class="text">Settings</span>
+          </button>
+        </nav>
+
+        <div class="spacer"></div>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <div class="top-l">
+            <div class="pill">Mentor View</div>
+            <div class="tagline">
+              <a href="analytics.html">📊 Analytics</a>
+            </div>
+          </div>
+
+          <div class="top-r">
+            <div class="mode">
+              <span class="muted" style="margin-right: 6px">🌓</span>
+              <div class="toggle" id="modeToggle"><div class="knob"></div></div>
+            </div>
+            <div class="pill" id="clock">--:--</div>
+            <div class="pill">🔔 4</div>
+            <div class="pill">👤 Mentor</div>
+          </div>
+        </div>
+
+        <div class="content">
+          <!-- DASHBOARD -->
+          <section id="dashboard" class="tab">
+            <div class="grid">
+              <div class="card" style="grid-column: 1 / -1">
+                <div class="card-inner">
+                  <h3>Overview</h3>
+                  <div class="kpis">
+                    <div class="kpi">
+                      <div class="muted">Active Students</div>
+                      <div class="big" id="kpiStudents">—</div>
+                      <div class="good">▲ Active this week</div>
+                    </div>
+                    <div class="kpi">
+                      <div class="muted">Ongoing Events</div>
+                      <div class="big" id="kpiEvents">—</div>
+                      <div>⏱️ In progress</div>
+                    </div>
+                    <div class="kpi">
+                      <div class="muted">Projects Submitted</div>
+                      <div class="big" id="kpiProjects">—</div>
+                      <div class="good">▲ Reviews this month</div>
+                    </div>
+                    <div class="kpi">
+                      <div class="muted">Messages Today</div>
+                      <div class="big" id="kpiMessages">—</div>
+                      <div>💬 Across all chats</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card" style="grid-column: span 7">
+                <div class="card-inner">
+                  <h3>Student activity feed</h3>
+                  <table id="activityTable">
+                    <thead>
+                      <tr>
+                        <th>Student</th>
+                        <th>Activity</th>
+                        <th>When</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- populated by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="card" style="grid-column: span 5">
+                <div class="card-inner">
+                  <h3>Students</h3>
+                  <div class="list" id="studentList"><!-- JS --></div>
+                </div>
+              </div>
+
+              <div class="card" style="grid-column: 1 / -1">
+                <div class="card-inner">
+                  <h3>Quick glance: event progress</h3>
+                  <div class="list" id="eventProgressList"><!-- JS --></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- EVENTS -->
+          <section id="events" class="tab" style="display: none">
+            <div class="tabs">
+              <button class="subtab active" data-sub="ongoing">Ongoing</button>
+              <button class="subtab" data-sub="history">History</button>
+            </div>
+            <div id="ongoing" class="subcontent">
+              <div class="card">
+                <div class="card-inner">
+                  <h3>Ongoing events</h3>
+                  <table id="ongoingEvents">
+                    <thead>
+                      <tr>
+                        <th>Event</th>
+                        <th>Students</th>
+                        <th>Progress</th>
+                        <th>Deadline</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div id="history" class="subcontent" style="display: none">
+              <div class="card">
+                <div class="card-inner">
+                  <h3>Past events</h3>
+                  <table id="historyEvents">
+                    <thead>
+                      <tr>
+                        <th>Event</th>
+                        <th>Participants</th>
+                        <th>Result</th>
+                        <th>Ended</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- CHAT -->
+          <section id="chat" class="tab" style="display: none">
+            <div class="cols">
+              <div class="card">
+                <div class="card-inner">
+                  <h3>Chat with students</h3>
+                  <div class="chat">
+                    <div class="chat-list" id="chatList"><!-- JS --></div>
+                    <div class="chat-window">
+                      <div class="chat-header" id="chatHeader">
+                        <div class="avatar" id="chatAvatar">S</div>
+                        <div>
+                          <div id="chatName" style="font-weight: 700">
+                            Select a student
+                          </div>
+                          <div class="muted" id="chatMeta">—</div>
+                        </div>
+                      </div>
+                      <div class="chat-messages" id="chatMessages">
+                        <div class="muted">
+                          Pick a student to view the conversation.
+                        </div>
+                      </div>
+                      <div class="chat-input">
+                        <input
+                          id="chatInput"
+                          placeholder="Write a message..."
+                          disabled
+                        />
+                        <button class="btn" id="sendMsg" disabled>Send</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-inner">
+                  <h3>Student details</h3>
+                  <div id="studentDetail">
+                    <div class="muted">
+                      Select a chat to view details and quick actions.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- PROJECTS -->
+          <section id="projects" class="tab" style="display: none">
+            <div class="grid">
+              <div class="card" style="grid-column: 1 / -1">
+                <div class="card-inner">
+                  <h3>Projects & assessment</h3>
+                  <div class="cards" id="projectCards"><!-- JS --></div>
+                </div>
+              </div>
+
+              <div class="card" style="grid-column: 1 / -1">
+                <div class="card-inner">
+                  <h3>Submission table</h3>
+                  <table id="projectTable">
+                    <thead>
+                      <tr>
+                        <th>Project</th>
+                        <th>Student</th>
+                        <th>Tech</th>
+                        <th>Status</th>
+                        <th>Rating</th>
+                        <th>Last update</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="card" style="grid-column: 1 / -1">
+                <div class="card-inner">
+                  <h3>Projects by student</h3>
+                  <div id="projectsByStudent"><!-- JS --></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SETTINGS -->
+          <section id="settings" class="tab" style="display: none">
+            <div class="card">
+              <div class="card-inner">
+                <h3>Settings</h3>
+                <div class="list">
+                  <div class="row">
+                    <div class="avatar">A</div>
+                    <div>
+                      <div class="name">Auto-save theme</div>
+                      <div class="meta">
+                        Persists your light/dark choice across sessions
+                      </div>
+                    </div>
+                    <div class="chip">Enabled</div>
+                  </div>
+                  <div class="row">
+                    <div class="avatar">N</div>
+                    <div>
+                      <div class="name">Notifications</div>
+                      <div class="meta">
+                        This demo shows a static count in the top bar
+                      </div>
+                    </div>
+                    <div class="chip">Demo</div>
+                  </div>
+                  <div class="row">
+                    <div class="avatar">D</div>
+                    <div>
+                      <div class="name">Data</div>
+                      <div class="meta">
+                        All data in this demo is local, in-memory sample data
+                      </div>
+                    </div>
+                    <div class="chip">Local</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal: Assessment -->
+    <!-- Modal: Assessment -->
+    <div class="modal-backdrop" id="assessmentModal">
+      <div class="modal">
+        <div class="body">
+          <h3>Assess project</h3>
+          <div class="muted" id="assessProjectTitle">Project title</div>
+          <label>Rating</label>
+          <div class="rating" id="assessStars"><!-- JS --></div>
+          <label>Feedback</label>
+          <textarea
+            id="assessFeedback"
+            rows="5"
+            placeholder="Share constructive, specific feedback..."
+          ></textarea>
+        </div>
+        <div class="footer">
+          <button class="btn ghost" id="assessCancel">Cancel</button>
+          <button class="btn" id="assessSave">Save</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      // -------- Sample data --------
+      const students = [
+        {
+          id: "s1",
+          name: "Aisha Khan",
+          year: "3rd year",
+          major: "CSE",
+          active: true,
+          email: "aisha@uni.edu",
+        },
+        {
+          id: "s2",
+          name: "Rohit Verma",
+          year: "2nd year",
+          major: "ECE",
+          active: false,
+          email: "rohit@uni.edu",
+        },
+        {
+          id: "s3",
+          name: "Meera Patel",
+          year: "4th year",
+          major: "IT",
+          active: true,
+          email: "meera@uni.edu",
+        },
+        {
+          id: "s4",
+          name: "Kabir Singh",
+          year: "1st year",
+          major: "CSE",
+          active: true,
+          email: "kabir@uni.edu",
+        },
+      ];
+
+      const activities = [
+        {
+          studentId: "s1",
+          text: 'Submitted milestone for "AI Study Buddy"',
+          when: "2h ago",
+          status: "On track",
+        },
+        {
+          studentId: "s3",
+          text: "Registered for HackNex 2025",
+          when: "5h ago",
+          status: "Registered",
+        },
+        {
+          studentId: "s2",
+          text: 'Updated README for "Campus Navigator"',
+          when: "1d ago",
+          status: "Updated",
+        },
+        {
+          studentId: "s4",
+          text: 'Pushed code to "EcoCart"',
+          when: "2d ago",
+          status: "Committed",
+        },
+      ];
+
+      const events = {
+        ongoing: [
+          {
+            id: "e1",
+            name: "HackNex 2025",
+            students: ["s1", "s3"],
+            progress: 72,
+            deadline: "2025-09-30",
+          },
+          {
+            id: "e2",
+            name: "Open Source Sprint",
+            students: ["s2", "s4"],
+            progress: 45,
+            deadline: "2025-10-15",
+          },
+        ],
+        history: [
+          {
+            id: "h1",
+            name: "CodeFest 2025",
+            participants: 12,
+            result: "Top 10%",
+            ended: "2025-07-21",
+          },
+          {
+            id: "h2",
+            name: "AI Mini Challenge",
+            participants: 8,
+            result: "Winner",
+            ended: "2025-06-10",
+          },
+        ],
+      };
+
+      const projects = [
+        {
+          id: "p1",
+          title: "AI Study Buddy",
+          studentId: "s1",
+          tech: ["React", "FastAPI", "OpenAI"],
+          status: "In Review",
+          rating: 4,
+          updated: "2h ago",
+          notes: "Good UX draft",
+        },
+        {
+          id: "p2",
+          title: "Campus Navigator",
+          studentId: "s2",
+          tech: ["Flutter", "Firebase"],
+          status: "Completed",
+          rating: 5,
+          updated: "1d ago",
+          notes: "",
+        },
+        {
+          id: "p3",
+          title: "EcoCart",
+          studentId: "s4",
+          tech: ["Next.js", "Node", "MongoDB"],
+          status: "Building",
+          rating: 3,
+          updated: "3d ago",
+          notes: "Needs tests",
+        },
+        {
+          id: "p4",
+          title: "Placement Tracker",
+          studentId: "s3",
+          tech: ["Django", "Postgres"],
+          status: "Approved",
+          rating: 5,
+          updated: "5d ago",
+          notes: "Great docs",
+        },
+        {
+          id: "p5",
+          title: "Hackathon Helper",
+          studentId: "s2",
+          tech: ["Svelte", "Supabase"],
+          status: "In Progress",
+          rating: 0,
+          updated: "6h ago",
+          notes: "",
+        },
+      ];
+
+      const chats = {
+        s1: [
+          { who: "them", txt: "Hey! Pushed the recommendation module." },
+          { who: "me", txt: "Nice. Add unit tests for edge cases." },
+        ],
+        s2: [{ who: "them", txt: "Could you review my Firebase rules?" }],
+        s3: [
+          { who: "them", txt: "Registered for the hackathon!" },
+          { who: "me", txt: "Awesome — focus on the demo flow." },
+        ],
+        s4: [
+          { who: "them", txt: "Struggling with pagination." },
+          { who: "me", txt: "Share a snippet, let’s debug." },
+        ],
+      };
+
+      // -------- State --------
+      let currentTab = "dashboard";
+      let currentChatId = null;
+      let assessProjectId = null;
+      let assessTempRating = 0;
+
+      // -------- Utilities --------
+      const el = (sel) => document.querySelector(sel);
+      const els = (sel) => Array.from(document.querySelectorAll(sel));
+      const byId = (id) => students.find((s) => s.id === id);
+      const studentName = (id) => (byId(id) || {}).name || "—";
+
+      function setClock() {
+        const d = new Date();
+        el("#clock").textContent = d.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+      setInterval(setClock, 1000);
+      setClock();
+
+      // -------- Theme --------
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+      }
+      el("#modeToggle").addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        localStorage.setItem(
+          "theme",
+          document.body.classList.contains("dark") ? "dark" : "light"
+        );
+      });
+
+      // -------- Navigation --------
+      els(".tabBtn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          els(".tabBtn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const target = btn.dataset.tab;
+          els(".tab").forEach((s) => (s.style.display = "none"));
+          el("#" + target).style.display = "";
+          currentTab = target;
+          // Ensure projects view is rendered when switching
+          if (target === "projects") {
+            renderProjects();
+            renderProjectsByStudent();
+          }
+        });
+      });
+
+      // Subtabs in Events
+      els(".subtab").forEach((st) => {
+        st.addEventListener("click", () => {
+          els(".subtab").forEach((x) => x.classList.remove("active"));
+          st.classList.add("active");
+          els(".subcontent").forEach((c) => (c.style.display = "none"));
+          el("#" + st.dataset.sub).style.display = "";
+        });
+      });
+
+      // -------- Populate Dashboard --------
+      function renderKpis() {
+        el("#kpiStudents").textContent = students.length;
+        el("#kpiEvents").textContent = events.ongoing.length;
+        el("#kpiProjects").textContent = projects.length;
+        const totalMsgs = Object.values(chats).reduce(
+          (a, c) => a + c.length,
+          0
+        );
+        el("#kpiMessages").textContent = totalMsgs;
+      }
+      function renderActivity() {
+        const tb = el("#activityTable tbody");
+        tb.innerHTML = "";
+        activities.forEach((a) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td><span class="name-link" onclick="goToStudentProjects('${
+            a.studentId
+          }')">${studentName(a.studentId)}</span></td>
+          <td>${a.text}</td>
+          <td>${a.when}</td>
+          <td><span class="chip">${a.status}</span></td>`;
+          tb.appendChild(tr);
+        });
+      }
+      function renderStudents() {
+        const c = el("#studentList");
+        c.innerHTML = "";
+        students.forEach((s) => {
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML = `
+          <div class="avatar">${s.name
+            .split(" ")
+            .map((p) => p[0])
+            .slice(0, 2)
+            .join("")}</div>
+          <div>
+            <div class="name name-link" onclick="goToStudentProjects('${
+              s.id
+            }')">${s.name}</div>
+            <div class="meta">${s.year} • ${s.major} • ${s.email}</div>
+          </div>
+          <div class="chip" style="border-color:${
+            s.active ? "#cfeedd" : "#f4d7dd"
+          }; color:${s.active ? "#1f8a5b" : "#b6425a"}">${
+            s.active ? "Active" : "Idle"
+          }</div>
+        `;
+          c.appendChild(row);
+        });
+      }
+      function renderEventProgress() {
+        const c = el("#eventProgressList");
+        c.innerHTML = "";
+        events.ongoing.forEach((ev) => {
+          const row = document.createElement("div");
+          row.className = "row";
+          row.style.gridTemplateColumns = "40px 2fr 2fr 1fr";
+          row.innerHTML = `
+          <div class="avatar">EV</div>
+          <div><div class="name">${ev.name}</div><div class="meta">${ev.students
+            .map(studentName)
+            .join(", ")}</div></div>
+          <div>
+            <div class="progress"><span style="width:${
+              ev.progress
+            }%"></span></div>
+            <div class="meta" style="margin-top:6px">${
+              ev.progress
+            }% complete</div>
+          </div>
+          <div class="chip">Due ${new Date(
+            ev.deadline
+          ).toLocaleDateString()}</div>
+        `;
+          c.appendChild(row);
+        });
+      }
+
+      // -------- Events page --------
+      function renderEvents() {
+        const tbO = el("#ongoingEvents tbody");
+        tbO.innerHTML = "";
+        events.ongoing.forEach((ev) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td>${ev.name}</td>
+          <td>${ev.students
+            .map(
+              (sid) =>
+                `<span class="name-link" onclick="goToStudentProjects('${sid}')">${studentName(
+                  sid
+                )}</span>`
+            )
+            .join(", ")}</td>
+          <td><div class="progress"><span style="width:${
+            ev.progress
+          }%"></span></div></td>
+          <td>${new Date(ev.deadline).toLocaleDateString()}</td>`;
+          tbO.appendChild(tr);
+        });
+
+        const tbH = el("#historyEvents tbody");
+        tbH.innerHTML = "";
+        events.history.forEach((h) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td>${h.name}</td>
+          <td>${h.participants}</td>
+          <td><span class="chip">${h.result}</span></td>
+          <td>${new Date(h.ended).toLocaleDateString()}</td>`;
+          tbH.appendChild(tr);
+        });
+      }
+
+      // -------- Chat --------
+      function renderChatList() {
+        const c = el("#chatList");
+        c.innerHTML = "";
+        students.forEach((s) => {
+          const card = document.createElement("div");
+          card.className = "chat-card";
+          if (currentChatId === s.id) card.classList.add("active");
+          const last = (chats[s.id] || []).slice(-1)[0];
+          card.innerHTML = `
+          <div style="display:flex; align-items:center; gap:10px">
+            <div class="avatar">${s.name
+              .split(" ")
+              .map((p) => p[0])
+              .slice(0, 2)
+              .join("")}</div>
+            <div style="min-width:0">
+              <div class="name-link" onclick="goToStudentProjects('${s.id}')">${
+            s.name
+          }</div>
+              <div class="muted" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${
+                last
+                  ? (last.who === "me" ? "You: " : "") + last.txt
+                  : "No messages yet"
+              }</div>
+            </div>
+          </div>`;
+          card.addEventListener("click", () => {
+            currentChatId = s.id;
+            renderChatList();
+            openConversation(s.id);
+          });
+          c.appendChild(card);
+        });
+      }
+      function openConversation(studentId) {
+        const s = byId(studentId);
+        el("#chatAvatar").textContent = s.name
+          .split(" ")
+          .map((p) => p[0])
+          .slice(0, 2)
+          .join("");
+        el("#chatName").textContent = s.name;
+        el("#chatMeta").textContent = `${s.year} • ${s.major} • ${
+          s.active ? "Online" : "Last seen recently"
+        }`;
+        el("#chatInput").disabled = false;
+        el("#sendMsg").disabled = false;
+        const m = el("#chatMessages");
+        m.innerHTML = "";
+        (chats[studentId] || []).forEach((msg) => {
+          const div = document.createElement("div");
+          div.className = "msg " + (msg.who === "me" ? "me" : "them");
+          div.textContent = msg.txt;
+          m.appendChild(div);
+        });
+        m.scrollTop = m.scrollHeight;
+        // Side details
+        el("#studentDetail").innerHTML = `
+        <div class="row" style="grid-template-columns: 50px 1fr auto">
+          <div class="avatar">${s.name
+            .split(" ")
+            .map((p) => p[0])
+            .slice(0, 2)
+            .join("")}</div>
+          <div>
+            <div class="name">${s.name}</div>
+            <div class="meta">${s.year} • ${s.major} • ${s.email}</div>
+          </div>
+          <div class="chip">${s.active ? "Active" : "Idle"}</div>
+        </div>
+        <div style="height:8px"></div>
+        <div class="list">
+          <div class="row" style="grid-template-columns: 1fr auto">
+            <div>
+              <div class="name">Quick note</div>
+              <div class="meta">Save a private note about mentoring focus</div>
+            </div>
+            <button class="btn ghost" onclick="alert('Demo only')">Add</button>
+          </div>
+          <div class="row" style="grid-template-columns: 1fr auto">
+            <div>
+              <div class="name">View projects</div>
+              <div class="meta">Jump to ${
+                s.name
+              }'s current and past projects</div>
+            </div>
+            <a class="btn ghost" href="#" onclick="goToStudentProjects('${
+              s.id
+            }')">Open</a>
+          </div>
+        </div>
+      `;
+      }
+      el("#sendMsg").addEventListener("click", sendMsg);
+      el("#chatInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          sendMsg();
+        }
+      });
+      function sendMsg() {
+        const input = el("#chatInput");
+        const txt = input.value.trim();
+        if (!txt || !currentChatId) return;
+        chats[currentChatId] = chats[currentChatId] || [];
+        chats[currentChatId].push({ who: "me", txt });
+        input.value = "";
+        openConversation(currentChatId);
+        renderChatList();
+        // Simulate quick reply
+        setTimeout(() => {
+          chats[currentChatId].push({ who: "them", txt: "Got it! Will do." });
+          openConversation(currentChatId);
+          renderChatList();
+        }, 700);
+      }
+
+      // -------- Projects --------
+      function renderProjects() {
+        // Cards
+        const c = el("#projectCards");
+        c.innerHTML = "";
+        projects.forEach((p) => {
+          const s = byId(p.studentId);
+          const card = document.createElement("div");
+          card.className = "p-card";
+          card.innerHTML = `
+          <div class="p-head">
+            <div style="display:flex; align-items:center; gap:10px">
+              <div class="avatar">${s.name
+                .split(" ")
+                .map((p) => p[0])
+                .slice(0, 2)
+                .join("")}</div>
+              <div>
+                <div style="font-weight:700">${p.title}</div>
+                <div class="muted"><span class="name-link" onclick="goToStudentProjects('${
+                  s.id
+                }')">${s.name}</span> • ${p.tech.join(", ")}</div>
+              </div>
+            </div>
+            <span class="tag">${p.status}</span>
+          </div>
+          <div class="p-body">
+            <div class="muted">Last update: ${p.updated}</div>
+            <div class="rating" data-id="${p.id}">
+              ${[1, 2, 3, 4, 5]
+                .map(
+                  (i) =>
+                    `<span class="star ${
+                      p.rating >= i ? "on" : ""
+                    }" data-rate="${i}">★</span>`
+                )
+                .join("")}
+            </div>
+            <div style="display:flex; gap:8px">
+              <button class="btn" onclick="openAssess('${
+                p.id
+              }')">Assess</button>
+              <button class="btn ghost" onclick="alert('Demo only: open repo')">View repo</button>
+            </div>
+          </div>`;
+          c.appendChild(card);
+        });
+
+        // Table
+        const tb = el("#projectTable tbody");
+        tb.innerHTML = "";
+        projects.forEach((p) => {
+          const s = byId(p.studentId);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td>${p.title}</td>
+          <td><span class="name-link" onclick="goToStudentProjects('${
+            s.id
+          }')">${s.name}</span></td>
+          <td>${p.tech.join(" / ")}</td>
+          <td><span class="chip">${p.status}</span></td>
+          <td>${"★".repeat(p.rating)}${"☆".repeat(5 - p.rating)}</td>
+          <td>${p.updated}</td>
+          <td><button class="btn" onclick="openAssess('${
+            p.id
+          }')">Assess</button></td>`;
+          tb.appendChild(tr);
+        });
+
+        // Wire rating interactions
+        els(".rating").forEach((r) => {
+          r.addEventListener("mouseover", (e) => {
+            if (e.target.classList.contains("star")) {
+              const rate = +e.target.dataset.rate;
+              r.querySelectorAll(".star").forEach((s, i) =>
+                s.classList.toggle("on", i < rate)
+              );
+            }
+          });
+          r.addEventListener("mouseleave", () => {
+            const id = r.dataset.id;
+            const proj = projects.find((x) => x.id === id);
+            r.querySelectorAll(".star").forEach((s, i) =>
+              s.classList.toggle("on", i < proj.rating)
+            );
+          });
+          r.addEventListener("click", (e) => {
+            if (e.target.classList.contains("star")) {
+              const id = r.dataset.id;
+              const rate = +e.target.dataset.rate;
+              const proj = projects.find((x) => x.id === id);
+              proj.rating = rate;
+              renderProjects(); // refresh table stars too
+              renderProjectsByStudent();
+            }
+          });
+        });
+      }
+
+      // Projects by Student (current vs past) + IDs for jumping
+      function renderProjectsByStudent() {
+        const container = el("#projectsByStudent");
+        container.innerHTML = "";
+        students.forEach((student) => {
+          const studentProjects = projects.filter(
+            (p) => p.studentId === student.id
+          );
+          if (studentProjects.length === 0) return;
+          const current = studentProjects.filter(
+            (p) => !["Approved", "Completed"].includes(p.status)
+          );
+          const past = studentProjects.filter((p) =>
+            ["Approved", "Completed"].includes(p.status)
+          );
+          const wrapper = document.createElement("div");
+          wrapper.className = "card";
+          wrapper.id = `student-projects-${student.id}`;
+          wrapper.style.marginBottom = "14px";
+          wrapper.innerHTML = `
+          <div class="card-inner">
+            <h4 style="margin:4px 0 10px">${student.name}</h4>
+            <div><strong>Current Projects:</strong></div>
+            <ul style="margin-top:6px">
+              ${
+                current.length
+                  ? current
+                      .map(
+                        (p) =>
+                          `<li>${p.title} — <span class="chip">${p.status}</span></li>`
+                      )
+                      .join("")
+                  : '<li class="muted">No current projects</li>'
+              }
+            </ul>
+            <div style="margin-top:8px"><strong>Past Projects:</strong></div>
+            <ul style="margin-top:6px">
+              ${
+                past.length
+                  ? past
+                      .map((p) => `<li>${p.title} — Rated ${p.rating}/5</li>`)
+                      .join("")
+                  : '<li class="muted">No past projects</li>'
+              }
+            </ul>
+          </div>
+        `;
+          container.appendChild(wrapper);
+        });
+      }
+
+      // Assessment modal
+      function openAssess(id) {
+        assessProjectId = id;
+        const p = projects.find((x) => x.id === id);
+        assessTempRating = p.rating;
+        el("#assessProjectTitle").textContent = `${p.title} — ${studentName(
+          p.studentId
+        )}`;
+        const stars = el("#assessStars");
+        stars.innerHTML = "";
+        [1, 2, 3, 4, 5].forEach((i) => {
+          const span = document.createElement("span");
+          span.className = "star " + (assessTempRating >= i ? "on" : "");
+          span.textContent = "★";
+          span.dataset.rate = i;
+          span.onclick = () => {
+            assessTempRating = i;
+            openAssess(id);
+          };
+          stars.appendChild(span);
+        });
+        el("#assessFeedback").value = p.notes || "";
+        el("#assessmentModal").style.display = "grid";
+      }
+      window.openAssess = openAssess;
+      el("#assessCancel").onclick = () => {
+        el("#assessmentModal").style.display = "none";
+      };
+      el("#assessSave").onclick = () => {
+        const p = projects.find((x) => x.id === assessProjectId);
+        if (!p) return;
+        p.rating = assessTempRating;
+        p.notes = el("#assessFeedback").value.trim();
+        p.status =
+          p.rating >= 4
+            ? "Approved"
+            : p.rating >= 2
+            ? "In Review"
+            : "Changes Requested";
+        p.updated = "Just now";
+        el("#assessmentModal").style.display = "none";
+        renderProjects();
+        renderProjectsByStudent();
+      };
+
+      // -------- Global search --------
+      el("#globalSearch").addEventListener("input", (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        // Activity
+        el("#activityTable tbody")
+          .querySelectorAll("tr")
+          .forEach((tr) => {
+            tr.style.display = tr.textContent.toLowerCase().includes(q)
+              ? ""
+              : "none";
+          });
+        // Students
+        el("#studentList")
+          .querySelectorAll(".row")
+          .forEach((r) => {
+            r.style.display = r.textContent.toLowerCase().includes(q)
+              ? ""
+              : "none";
+          });
+        // Ongoing events
+        el("#ongoingEvents tbody")
+          .querySelectorAll("tr")
+          .forEach((tr) => {
+            tr.style.display = tr.textContent.toLowerCase().includes(q)
+              ? ""
+              : "none";
+          });
+        // Projects table
+        el("#projectTable tbody")
+          .querySelectorAll("tr")
+          .forEach((tr) => {
+            tr.style.display = tr.textContent.toLowerCase().includes(q)
+              ? ""
+              : "none";
+          });
+      });
+
+      // -------- Jump to projects for a student --------
+      function goToStudentProjects(studentId) {
+        // Switch to Projects tab
+        els(".tabBtn")
+          .find((b) => b.dataset.tab === "projects")
+          .click();
+
+        // Ensure content is rendered
+        renderProjects();
+        renderProjectsByStudent();
+
+        // Smooth scroll and highlight
+        setTimeout(() => {
+          const target = document.getElementById(
+            `student-projects-${studentId}`
+          );
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            target.classList.add("highlighted");
+            setTimeout(() => target.classList.remove("highlighted"), 1600);
+          }
+        }, 60);
+      }
+      window.goToStudentProjects = goToStudentProjects;
+
+      // -------- Helpers --------
+      function gotoTab(id) {
+        els(".tabBtn").forEach((b) => {
+          if (b.dataset.tab === id) {
+            b.click();
+          }
+        });
+      }
+      window.gotoTab = gotoTab;
+
+      // -------- Initial render --------
+      function init() {
+        renderKpis();
+        renderActivity();
+        renderStudents();
+        renderEventProgress();
+        renderEvents();
+        renderChatList();
+        renderProjects();
+        renderProjectsByStudent();
+      }
+      init();
+    </script>
+  </body>
+</html>

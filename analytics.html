@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mentor Dashboard</title>
+    <link rel="stylesheet" href="analytics.css" />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Mentor Dashboard</h1>
+            <div class="hint">
+              Track progress • Verify certificates • Manage attendance • View
+              analytics
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button
+            class="btn ghost"
+            id="exportBtn"
+            title="Export attendance JSON"
+          >
+            Export
+          </button>
+          <button class="btn" id="resetBtn" title="Reset local data">
+            Reset
+          </button>
+        </div>
+      </header>
+
+      <!-- Tabs -->
+      <div class="card">
+        <div class="tabs" role="tablist" aria-label="Mentor dashboard tabs">
+          <button
+            class="tab-btn active"
+            data-tab="progress"
+            role="tab"
+            aria-selected="true"
+          >
+            Student Progress
+          </button>
+          <button
+            class="tab-btn"
+            data-tab="outstanding"
+            role="tab"
+            aria-selected="false"
+          >
+            Outstanding Students
+          </button>
+          <button
+            class="tab-btn"
+            data-tab="underperforming"
+            role="tab"
+            aria-selected="false"
+          >
+            Underperforming Students
+          </button>
+        </div>
+
+        <!-- Student Progress Panel -->
+        <section
+          id="panel-progress"
+          class="tab-panel active"
+          role="tabpanel"
+          aria-labelledby="Student Progress"
+        >
+          <div class="row" style="margin-bottom: 12px">
+            <div class="field">
+              <label for="studentSelect">Select student</label>
+              <select id="studentSelect"></select>
+            </div>
+            <div class="field">
+              <label for="metricSelect">Metric</label>
+              <select id="metricSelect">
+                <option value="scores">Scores</option>
+                <option value="attendance">Attendance %</option>
+                <option value="projects">Projects Done</option>
+              </select>
+            </div>
+          </div>
+          <div class="card" style="padding: 16px">
+            <div class="section-title">
+              <span>Progress Over Time</span
+              ><span class="hint" id="chartHint">Line chart (monthly)</span>
+            </div>
+            <canvas id="progressChart" height="120"></canvas>
+          </div>
+        </section>
+
+        <!-- Outstanding Students Panel -->
+        <section
+          id="panel-outstanding"
+          class="tab-panel"
+          role="tabpanel"
+          aria-labelledby="Outstanding Students"
+        >
+          <div class="card" style="margin-bottom: 12px">
+            <div class="section-title">
+              <span>Top Performers</span
+              ><span class="hint">Based on cumulative score</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Score</th>
+                  <th>Badge</th>
+                </tr>
+              </thead>
+              <tbody id="outstandingTable"></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="section-title">
+              <span>Outstanding Breakdown</span
+              ><span class="hint">Bar chart per department</span>
+            </div>
+            <canvas id="outstandingChart" height="120"></canvas>
+          </div>
+        </section>
+
+        <!-- Underperforming Students Panel -->
+        <section
+          id="panel-underperforming"
+          class="tab-panel"
+          role="tabpanel"
+          aria-labelledby="Underperforming Students"
+        >
+          <div class="card" style="margin-bottom: 12px">
+            <div class="section-title">
+              <span>Needs Attention</span
+              ><span class="hint">Low recent scores & attendance</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Recent Score</th>
+                  <th>Last 30d Attendance</th>
+                </tr>
+              </thead>
+              <tbody id="underTable"></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="section-title">
+              <span>Risk Distribution</span
+              ><span class="hint">Doughnut chart</span>
+            </div>
+            <canvas id="riskChart" height="120"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <!-- Certificate Verification + Attendance -->
+      <div class="grid" style="margin-top: 16px">
+        <div class="card">
+          <div class="section-title">
+            <span>Certificate Verification</span
+            ><span class="hint">Enter Certificate ID and validate</span>
+          </div>
+          <div class="row" style="align-items: end">
+            <div class="field">
+              <label for="certId">Certificate ID</label>
+              <input
+                type="text"
+                id="certId"
+                placeholder="e.g., C-2025-ABCD-0912"
+              />
+              <div id="certStatus" class="status info">Idle</div>
+            </div>
+            <div class="field">
+              <button class="btn" id="verifyBtn">Verify</button>
+            </div>
+          </div>
+          <div class="hint" style="margin-top: 8px">
+            Format rule: <code>C-YYYY-XXXX-NNNN</code> (regex + registry lookup)
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <span>Attendance</span
+            ><span class="hint" id="attHint"
+              >Select present students and Save</span
+            >
+          </div>
+          <div class="field" style="margin-bottom: 8px">
+            <label for="attDate">Date</label>
+            <input type="text" id="attDate" placeholder="YYYY-MM-DD" />
+          </div>
+          <div class="checklist" id="attendanceList"></div>
+          <div style="display: flex; gap: 8px; margin-top: 10px">
+            <button class="btn" id="saveAttendance">Save</button>
+            <button class="btn ghost" id="clearAttendance">Clear</button>
+          </div>
+          <div id="attStatus" class="status info">No changes yet</div>
+        </div>
+      </div>
+
+      <footer>
+        © <span id="year"></span> Mentor Dashboard • Demo data only
+      </footer>
+    </div>
+
+    <script>
+      // ----- Demo Data -----
+      const students = [
+        { id: "S101", name: "Aarav Mehta", dept: "CSE" },
+        { id: "S102", name: "Isha Kapoor", dept: "ECE" },
+        { id: "S103", name: "Rohan Das", dept: "CSE" },
+        { id: "S104", name: "Sara Khan", dept: "IT" },
+        { id: "S105", name: "Vivaan Rao", dept: "ME" },
+        { id: "S106", name: "Ananya Singh", dept: "CSE" },
+        { id: "S107", name: "Kabir Patel", dept: "ECE" },
+        { id: "S108", name: "Diya Nair", dept: "IT" },
+      ];
+
+      // Per-student monthly metrics (Jan–Aug)
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"];
+      const metrics = {
+        scores: {
+          S101: [72, 74, 78, 81, 83, 85, 88, 90],
+          S102: [80, 78, 79, 82, 84, 86, 87, 89],
+          S103: [60, 62, 65, 69, 72, 74, 75, 76],
+          S104: [68, 70, 72, 73, 75, 78, 79, 82],
+          S105: [58, 55, 59, 61, 63, 64, 66, 67],
+          S106: [88, 86, 87, 90, 92, 93, 94, 95],
+          S107: [77, 79, 80, 81, 82, 83, 84, 85],
+          S108: [65, 67, 68, 70, 71, 73, 74, 76],
+        },
+        attendance: {
+          S101: [90, 91, 92, 92, 93, 94, 95, 95],
+          S102: [88, 89, 90, 90, 91, 92, 93, 93],
+          S103: [70, 72, 73, 74, 74, 75, 76, 78],
+          S104: [85, 86, 87, 87, 88, 89, 90, 90],
+          S105: [68, 69, 70, 70, 71, 72, 73, 73],
+          S106: [96, 96, 97, 97, 97, 98, 98, 99],
+          S107: [84, 85, 86, 86, 87, 88, 88, 89],
+          S108: [75, 76, 77, 78, 78, 79, 80, 81],
+        },
+        projects: {
+          S101: [1, 1, 1, 2, 2, 3, 3, 4],
+          S102: [1, 1, 2, 2, 3, 3, 4, 4],
+          S103: [0, 0, 1, 1, 1, 2, 2, 2],
+          S104: [1, 1, 1, 2, 2, 3, 3, 3],
+          S105: [0, 1, 1, 1, 2, 2, 2, 3],
+          S106: [2, 2, 3, 3, 4, 4, 5, 5],
+          S107: [1, 1, 2, 2, 2, 3, 3, 4],
+          S108: [0, 1, 1, 2, 2, 3, 3, 4],
+        },
+      };
+
+      // Outstanding / Underperforming demo rows
+      const outstandingRows = [
+        {
+          rank: 1,
+          name: "Ananya Singh",
+          dept: "CSE",
+          score: 95,
+          badge: "gold",
+        },
+        {
+          rank: 2,
+          name: "Isha Kapoor",
+          dept: "ECE",
+          score: 89,
+          badge: "silver",
+        },
+        {
+          rank: 3,
+          name: "Aarav Mehta",
+          dept: "CSE",
+          score: 90,
+          badge: "bronze",
+        },
+        { rank: 4, name: "Sara Khan", dept: "IT", score: 82 },
+        { rank: 5, name: "Kabir Patel", dept: "ECE", score: 85 },
+      ];
+
+      const underRows = [
+        { name: "Vivaan Rao", dept: "ME", score: 67, att: "73%" },
+        { name: "Rohan Das", dept: "CSE", score: 76, att: "78%" },
+        { name: "Diya Nair", dept: "IT", score: 76, att: "81%" },
+      ];
+
+      // Certificate registry: pretend these are issued & valid
+      const validCertificates = new Set([
+        "C-2025-ABCD-0912",
+        "C-2024-X1Y2-5501",
+        "C-2025-CSEH-0077",
+      ]);
+
+      // ----- Tabs -----
+      const tabButtons = document.querySelectorAll(".tab-btn");
+      const tabPanels = {
+        progress: document.getElementById("panel-progress"),
+        outstanding: document.getElementById("panel-outstanding"),
+        underperforming: document.getElementById("panel-underperforming"),
+      };
+      tabButtons.forEach((btn) =>
+        btn.addEventListener("click", () => {
+          const key = btn.dataset.tab;
+          tabButtons.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          Object.values(tabPanels).forEach((p) => p.classList.remove("active"));
+          tabPanels[key].classList.add("active");
+        })
+      );
+
+      // ----- Populate selects & tables -----
+      const studentSelect = document.getElementById("studentSelect");
+      const metricSelect = document.getElementById("metricSelect");
+      students.forEach((s) => {
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = `${s.name} (${s.dept})`;
+        studentSelect.appendChild(opt);
+      });
+
+      function renderTables() {
+        const outTbody = document.getElementById("outstandingTable");
+        outTbody.innerHTML = "";
+        outstandingRows.forEach((r) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td>${r.rank}</td>
+          <td>${r.name}</td>
+          <td>${r.dept}</td>
+          <td>${r.score}</td>
+          <td>${
+            r.badge
+              ? `<span class="badge ${r.badge}">${r.badge.toUpperCase()}</span>`
+              : ""
+          }</td>`;
+          outTbody.appendChild(tr);
+        });
+
+        const underTbody = document.getElementById("underTable");
+        underTbody.innerHTML = "";
+        underRows.forEach((r, idx) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${r.name}</td>
+          <td>${r.dept}</td>
+          <td>${r.score}</td>
+          <td>${r.att}</td>`;
+          underTbody.appendChild(tr);
+        });
+      }
+      renderTables();
+
+      // ----- Charts -----
+      let progressChart, outstandingChart, riskChart;
+
+      function createProgressChart(studentId, metricKey) {
+        const ctx = document.getElementById("progressChart").getContext("2d");
+        const data = metrics[metricKey][studentId];
+        if (progressChart) progressChart.destroy();
+        progressChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: months,
+            datasets: [
+              {
+                label: `${metricKey} — ${
+                  students.find((s) => s.id === studentId).name
+                }`,
+                data,
+                tension: 0.35,
+                fill: true,
+                borderColor: getComputedStyle(
+                  document.documentElement
+                ).getPropertyValue("--accent"),
+                backgroundColor: "rgba(34, 211, 238, 0.15)",
+                pointRadius: 3,
+              },
+            ],
+          },
+          options: {
+            plugins: { legend: { labels: { color: "#e8e9ff" } } },
+            scales: {
+              x: {
+                ticks: { color: "#8b90b3" },
+                grid: { color: "rgba(255,255,255,0.06)" },
+              },
+              y: {
+                ticks: { color: "#8b90b3" },
+                grid: { color: "rgba(255,255,255,0.06)" },
+              },
+            },
+          },
+        });
+        document.getElementById("chartHint").textContent =
+          metricKey === "projects"
+            ? "Line chart (cumulative projects)"
+            : "Line chart (monthly)";
+      }
+
+      function createOutstandingChart() {
+        const ctx = document
+          .getElementById("outstandingChart")
+          .getContext("2d");
+        if (outstandingChart) outstandingChart.destroy();
+        // Count per department
+        const countsByDept = outstandingRows.reduce((acc, r) => {
+          acc[r.dept] = (acc[r.dept] || 0) + 1;
+          return acc;
+        }, {});
+        const labels = Object.keys(countsByDept);
+        const values = Object.values(countsByDept);
+        outstandingChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [{ label: "Outstanding count", data: values }],
+          },
+          options: {
+            plugins: { legend: { labels: { color: "#e8e9ff" } } },
+            scales: {
+              x: { ticks: { color: "#8b90b3" }, grid: { display: false } },
+              y: {
+                ticks: { color: "#8b90b3" },
+                grid: { color: "rgba(255,255,255,0.06)" },
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+
+      function createRiskChart() {
+        const ctx = document.getElementById("riskChart").getContext("2d");
+        if (riskChart) riskChart.destroy();
+        const buckets = { Low: 4, Medium: 3, High: 2 }; // demo
+        riskChart = new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: Object.keys(buckets),
+            datasets: [{ data: Object.values(buckets) }],
+          },
+          options: { plugins: { legend: { labels: { color: "#e8e9ff" } } } },
+        });
+      }
+
+      // initial chart
+      studentSelect.value = students[0].id;
+      createProgressChart(studentSelect.value, "scores");
+      createOutstandingChart();
+      createRiskChart();
+
+      studentSelect.addEventListener("change", () =>
+        createProgressChart(studentSelect.value, metricSelect.value)
+      );
+      metricSelect.addEventListener("change", () =>
+        createProgressChart(studentSelect.value, metricSelect.value)
+      );
+
+      // ----- Certificate Verification -----
+      const certInput = document.getElementById("certId");
+      const certBtn = document.getElementById("verifyBtn");
+      const certStatus = document.getElementById("certStatus");
+
+      function validateCertificateId(id) {
+        // Regex: C-YYYY-XXXX-NNNN (X alnum, N digits)
+        const re = /^C-(20\d{2})-([A-Z0-9]{4})-(\d{4})$/;
+        return re.test(id);
+      }
+
+      certBtn.addEventListener("click", () => {
+        const id = certInput.value.trim().toUpperCase();
+        if (!validateCertificateId(id)) {
+          certStatus.textContent = "Invalid format. Expected: C-YYYY-XXXX-NNNN";
+          certStatus.className = "status error";
+          return;
+        }
+        // Simulated registry lookup
+        if (validCertificates.has(id)) {
+          certStatus.textContent = "Valid certificate ✅ (matched in registry)";
+          certStatus.className = "status success";
+        } else {
+          certStatus.textContent = "Not found ❌ (no match in registry)";
+          certStatus.className = "status error";
+        }
+      });
+
+      // ----- Attendance -----
+      const attendanceList = document.getElementById("attendanceList");
+      const saveAttendance = document.getElementById("saveAttendance");
+      const clearAttendance = document.getElementById("clearAttendance");
+      const attStatus = document.getElementById("attStatus");
+      const attDate = document.getElementById("attDate");
+
+      // Prefill date as today (local)
+      attDate.value = new Date().toISOString().slice(0, 10);
+
+      function renderAttendance(dateKey) {
+        attendanceList.innerHTML = "";
+        students.forEach((s) => {
+          const wrap = document.createElement("label");
+          wrap.className = "check-item";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.name = "att";
+          cb.value = s.id;
+          // Load from localStorage
+          const saved = JSON.parse(
+            localStorage.getItem("attendance:" + dateKey) || "{}"
+          );
+          cb.checked = !!saved[s.id];
+          const span = document.createElement("span");
+          span.textContent = `${s.name} — ${s.dept}`;
+          wrap.appendChild(cb);
+          wrap.appendChild(span);
+          attendanceList.appendChild(wrap);
+        });
+      }
+
+      function getAttendance(dateKey) {
+        const data = {};
+        document
+          .querySelectorAll('input[name="att"]:checked')
+          .forEach((cb) => (data[cb.value] = true));
+        return data;
+      }
+
+      function summarizeAttendance(obj) {
+        const present = Object.keys(obj).length;
+        return `${present}/${students.length} present`;
+      }
+
+      saveAttendance.addEventListener("click", () => {
+        const key = "attendance:" + attDate.value;
+        const data = getAttendance(attDate.value);
+        localStorage.setItem(key, JSON.stringify(data));
+        attStatus.textContent = `Saved • ${summarizeAttendance(
+          data
+        )} • Key: ${key}`;
+        attStatus.className = "status success";
+        pulse(attStatus);
+      });
+
+      clearAttendance.addEventListener("click", () => {
+        const key = "attendance:" + attDate.value;
+        localStorage.removeItem(key);
+        renderAttendance(attDate.value);
+        attStatus.textContent = "Cleared saved attendance for this date";
+        attStatus.className = "status info";
+      });
+
+      attDate.addEventListener("change", () => {
+        renderAttendance(attDate.value);
+        const saved = JSON.parse(
+          localStorage.getItem("attendance:" + attDate.value) || "{}"
+        );
+        attStatus.textContent = Object.keys(saved).length
+          ? `Loaded • ${summarizeAttendance(saved)}`
+          : "No saved data for this date";
+        attStatus.className = "status info";
+      });
+
+      function pulse(el) {
+        el.animate([{ opacity: 0.6 }, { opacity: 1 }], { duration: 400 });
+      }
+
+      // initial attendance render
+      renderAttendance(attDate.value);
+
+      // ----- Export / Reset -----
+      document.getElementById("exportBtn").addEventListener("click", () => {
+        const exportData = {};
+        Object.keys(localStorage)
+          .filter((k) => k.startsWith("attendance:"))
+          .forEach((k) => {
+            exportData[k] = JSON.parse(localStorage.getItem(k));
+          });
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "attendance-export.json";
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        if (
+          confirm("Reset dashboard demo data? This will clear attendance only.")
+        ) {
+          Object.keys(localStorage)
+            .filter((k) => k.startsWith("attendance:"))
+            .forEach((k) => localStorage.removeItem(k));
+          renderAttendance(attDate.value);
+          attStatus.textContent = "All attendance data cleared";
+          attStatus.className = "status info";
+        }
+      });
+
+      // Footer year
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

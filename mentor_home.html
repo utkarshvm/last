@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Student Hub — Mentor Home</title>
+    <style>
+      /* ---------- Theme Variables ---------- */
+      :root {
+        --bg: #ffffff;
+        --muted: #6b7280;
+        --card: #f9fafb;
+        --accent: #7c3aed;
+        --accent-2: #6d28d9;
+        --accent-ghost: rgba(124, 58, 237, 0.08);
+        --text: #111827;
+        --border: #e5e7eb;
+        --shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        --radius: 14px;
+      }
+      body.dark {
+        --bg: #111827;
+        --muted: #9ca3af;
+        --card: #1f2937;
+        --accent: #8b5cf6;
+        --accent-2: #7c3aed;
+        --accent-ghost: rgba(139, 92, 246, 0.12);
+        --text: #f9fafb;
+        --border: #374151;
+        --shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        overflow-x: hidden;
+      }
+
+      /* ---------- Top Navigation ---------- */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        z-index: 1000;
+      }
+      nav .logo {
+        font-weight: 700;
+        font-size: 20px;
+        color: var(--accent);
+        margin-right: 30px;
+      }
+      nav .nav-links {
+        display: flex;
+        gap: 14px;
+        flex: 1;
+      }
+      nav .nav-links button {
+        background: transparent;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--text);
+        transition: 0.2s;
+      }
+      nav .nav-links button.active,
+      nav .nav-links button:hover {
+        background: var(--accent-ghost);
+        color: var(--accent);
+      }
+      nav .search {
+        flex: 1;
+        max-width: 400px;
+      }
+      nav input[type="text"] {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: var(--text);
+      }
+      nav .actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      label.switch {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      label.switch input {
+        display: none;
+      }
+      label.switch span {
+        width: 36px;
+        height: 18px;
+        border-radius: 999px;
+        background: var(--border);
+        position: relative;
+        transition: 0.3s;
+      }
+      label.switch span::before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        background: #fff;
+        border-radius: 50%;
+        transition: 0.3s;
+      }
+      label.switch input:checked + span {
+        background: var(--accent);
+      }
+      label.switch input:checked + span::before {
+        transform: translateX(18px);
+      }
+
+      /* ---------- Layout ---------- */
+      .layout {
+        display: grid;
+        grid-template-columns: 280px 1fr 320px;
+        gap: 20px;
+        max-width: 1400px;
+        margin: 80px auto 40px;
+        padding: 0 20px;
+      }
+      aside.left {
+        position: sticky;
+        top: 80px;
+        height: calc(100vh - 100px);
+        overflow-y: auto;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+        border: 1px solid var(--border);
+      }
+
+      /* ---------- Profile ---------- */
+      .mentor-profile {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+      .avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 22px;
+      }
+      .meta h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+      .meta p {
+        margin: 4px 0 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .stats {
+        display: flex;
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .stat {
+        flex: 1;
+        padding: 12px;
+        border-radius: 10px;
+        background: var(--accent-ghost);
+        text-align: center;
+      }
+      .stat strong {
+        display: block;
+        font-size: 18px;
+        color: var(--accent);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text);
+      }
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      /* ---------- Sections ---------- */
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .section-title h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .news-list,
+      .top-voted,
+      .events-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .news-card {
+        padding: 14px;
+        border-radius: 12px;
+        background: var(--accent-ghost);
+      }
+      .news-card h3 {
+        margin: 0;
+        font-size: 15px;
+      }
+      .news-meta {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .content-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        background: var(--card);
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+      }
+      .thumb {
+        width: 60px;
+        height: 46px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #e9d5ff, #c4b5fd);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+      }
+      .votes {
+        text-align: right;
+      }
+
+      .event {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        padding: 14px;
+        border-radius: 12px;
+        background: var(--accent-ghost);
+        justify-content: space-between;
+      }
+      .pill {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 12px;
+      }
+
+      /* Leaderboard */
+      .leaderboard li {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .leaderboard li:last-child {
+        border-bottom: none;
+      }
+
+      .resource {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 10px;
+        border-radius: 10px;
+        background: var(--accent-ghost);
+      }
+      .resource .icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .comment {
+        padding: 10px;
+        border-radius: 10px;
+        background: var(--accent-ghost);
+      }
+
+      /* Announcements Banner */
+      .announcements {
+        padding: 12px;
+        background: var(--accent-ghost);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Navigation -->
+    <nav>
+      <div class="logo">Student Hub</div>
+      <div class="nav-links">
+        <button class="active">Home</button>
+        <button class="active"><a href="mentor.html">Dashboard</a></button>
+        <button class="active"><a href="analytics.html">Analytics</a></button>
+        <button class="active">Community</button>
+        <button class="active">Messages</button>
+      </div>
+      <div class="search"><input type="text" placeholder="Search..." /></div>
+      <div class="actions">
+        <label class="switch">
+          <input type="checkbox" id="themeToggle" />
+          <span></span>
+        </label>
+      </div>
+    </nav>
+
+    <!-- Layout -->
+    <div class="layout">
+      <!-- LEFT: Profile -->
+      <aside class="left">
+        <div class="card">
+          <div class="mentor-profile">
+            <div class="avatar">AR</div>
+            <div class="meta">
+              <h3>Aryan Roy</h3>
+              <p>Assistant Professor — CS</p>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><strong>18</strong>Mentees</div>
+            <div class="stat"><strong>42</strong>Sessions</div>
+          </div>
+          <div
+            style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap"
+          >
+            <button class="btn primary">Edit Profile</button>
+            <button class="btn ghost">Set Busy</button>
+            <button class="btn ghost">Broadcast</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CENTER: Main Feed -->
+      <main style="display: flex; flex-direction: column; gap: 20px">
+        <div class="announcements">
+          🚀 Upcoming HackFest 2025 — Oct 10th · Register Now!
+        </div>
+
+        <div class="card">
+          <div class="section-title"><h2>Community News</h2></div>
+          <div class="news-list">
+            <div class="news-card">
+              <h3>New AI Workshop Announced</h3>
+              <div class="news-meta">Admin · 2d ago</div>
+            </div>
+            <div class="news-card">
+              <h3>Open Project Showcase Submissions</h3>
+              <div class="news-meta">Events Team · 5d ago</div>
+            </div>
+            <div class="news-card">
+              <h3>Design Sprint Winners Announced</h3>
+              <div class="news-meta">Community · 1w ago</div>
+            </div>
+            <div class="news-card">
+              <h3>Research Paper Guidelines Posted</h3>
+              <div class="news-meta">Academics · 2w ago</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title"><h2>Top Voted Projects</h2></div>
+          <div class="top-voted">
+            <div class="content-row">
+              <div class="thumb">R</div>
+              <div style="flex: 1">
+                <strong>Smart Attendance</strong>
+                <div class="small">Face + NFC</div>
+              </div>
+              <div class="votes">124 ▲</div>
+            </div>
+            <div class="content-row">
+              <div class="thumb">C</div>
+              <div style="flex: 1">
+                <strong>CropCare</strong>
+                <div class="small">ML Soil Analysis</div>
+              </div>
+              <div class="votes">98 ▲</div>
+            </div>
+            <div class="content-row">
+              <div class="thumb">H</div>
+              <div style="flex: 1">
+                <strong>HealthMate</strong>
+                <div class="small">Wearable Tracker</div>
+              </div>
+              <div class="votes">85 ▲</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title"><h2>Events & Hackathons</h2></div>
+          <div class="events-list">
+            <div class="event">
+              <div>
+                <strong>HackFest 2025</strong>
+                <div class="small">Oct 10 · 9 AM</div>
+              </div>
+              <div><button class="btn primary">Register</button></div>
+            </div>
+            <div class="event">
+              <div>
+                <strong>AI Ethics Panel</strong>
+                <div class="small">Sep 25 · 6 PM</div>
+              </div>
+              <div class="pill">Panel</div>
+            </div>
+            <div class="event">
+              <div>
+                <strong>Web Dev Bootcamp</strong>
+                <div class="small">Nov 1 · 10 AM</div>
+              </div>
+              <div class="pill">Workshop</div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- RIGHT: Widgets -->
+      <aside style="display: flex; flex-direction: column; gap: 20px">
+        <div class="card">
+          <div class="section-title"><h2>Leaderboard</h2></div>
+          <ul
+            class="leaderboard"
+            style="list-style: none; padding: 0; margin: 0"
+          >
+            <li><span>1. Priya</span><span>420 pts</span></li>
+            <li><span>2. Rohan</span><span>390 pts</span></li>
+            <li><span>3. Meera</span><span>350 pts</span></li>
+            <li><span>4. Arjun</span><span>340 pts</span></li>
+            <li><span>5. Tanya</span><span>320 pts</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="section-title"><h2>Resources</h2></div>
+          <div class="resource">
+            <div class="icon">📖</div>
+            <div>Mentoring Guide</div>
+          </div>
+          <div class="resource">
+            <div class="icon">📑</div>
+            <div>Project Rubric</div>
+          </div>
+          <div class="resource">
+            <div class="icon">🎥</div>
+            <div>Recorded Sessions</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><h2>Discussion Corner</h2></div>
+          <div class="comment">
+            <strong>Dr. Mehta</strong>
+            <div class="small">Proposal: ML Reading Group?</div>
+          </div>
+          <div class="comment">
+            <strong>Sara</strong>
+            <div class="small">Weekly UI practice session?</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <script>
+      const toggle = document.getElementById("themeToggle");
+      toggle.addEventListener("change", () => {
+        document.body.classList.toggle("dark", toggle.checked);
+      });
+    </script>
+  </body>
+</html>

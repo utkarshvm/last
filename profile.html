@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Dynamic Student Portfolio</title>
+
+    <!-- Fonts & Libraries -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="profile.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  </head>
+  <body>
+    <h1><a href="club2.html">HOME</a></h1>
+    <div class="wrap">
+      <header>
+        <div class="brand">
+          <div class="logo">SP</div>
+          <div>
+            <h1>Student Portfolio Hub</h1>
+
+            <p class="lead">
+              Dynamic portfolio — edit, save, share, export PDF.
+            </p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="toggle">
+            <label style="display: flex; align-items: center; gap: 8px">
+              <input id="themeToggle" type="checkbox" />
+              <span style="font-size: 13px; color: var(--muted)"
+                >Light Theme</span
+              >
+            </label>
+          </div>
+
+          <button class="btn" id="exportPdfBtn">Export PDF</button>
+          <button class="btn ghost" id="resetBtn">Reset</button>
+        </div>
+      </header>
+
+      <div class="grid">
+        <!-- LEFT: Form & Inputs -->
+        <div class="card">
+          <h3>Edit Profile & Data</h3>
+          <div class="muted">Profile</div>
+          <label>Name</label>
+          <input id="inputName" type="text" placeholder="Full name" />
+          <label>Email</label>
+          <input id="inputEmail" type="email" placeholder="Email" />
+          <label>Phone</label>
+          <input id="inputPhone" type="text" placeholder="Phone" />
+          <label>Profile Photo (URL)</label>
+          <input id="inputPhoto" type="text" placeholder="https://..." />
+          <div style="display: flex; gap: 8px; margin-top: 10px">
+            <input
+              id="inputHeadline"
+              type="text"
+              placeholder="Short headline (e.g. Frontend Developer)"
+              class="small"
+            />
+          </div>
+
+          <hr
+            style="
+              margin: 12px 0;
+              border: none;
+              border-top: 1px solid rgba(255, 255, 255, 0.03);
+            "
+          />
+
+          <h3 style="margin-top: 6px">Skills</h3>
+          <div class="muted">Add skill and level (0-100)</div>
+          <div class="row" style="margin-top: 8px">
+            <input
+              id="skillName"
+              type="text"
+              placeholder="Skill (HTML, Python...)"
+            />
+            <input id="skillLevel" type="text" placeholder="85" />
+          </div>
+          <div style="display: flex; gap: 6px; margin-top: 8px">
+            <button class="small btn" id="addSkillBtn">Add Skill</button>
+            <button class="small muted-btn" id="clearSkillsBtn">Clear</button>
+          </div>
+
+          <hr
+            style="
+              margin: 12px 0;
+              border: none;
+              border-top: 1px solid rgba(255, 255, 255, 0.03);
+            "
+          />
+
+          <h3>Projects</h3>
+          <label>Title</label>
+          <input id="projTitle" type="text" placeholder="Project title" />
+          <label>Description</label>
+          <textarea id="projDesc" placeholder="Short description..."></textarea>
+          <label>Link (GitHub / Demo)</label>
+          <input
+            id="projLink"
+            type="text"
+            placeholder="https://github.com/..."
+          />
+          <div style="display: flex; gap: 8px; margin-top: 8px">
+            <button class="small btn" id="addProjBtn">Add Project</button>
+            <button class="small muted-btn" id="clearProjBtn">Clear</button>
+          </div>
+
+          <hr
+            style="
+              margin: 12px 0;
+              border: none;
+              border-top: 1px solid rgba(255, 255, 255, 0.03);
+            "
+          />
+
+          <h3>Achievements & Events</h3>
+          <label>Title</label>
+          <input id="evTitle" type="text" placeholder="Award / Event title" />
+          <label>Date</label>
+          <input id="evDate" type="text" placeholder="YYYY-MM-DD" />
+          <label>Type</label>
+          <select id="evType">
+            <option value="achievement">Achievement</option>
+            <option value="event">Event</option>
+          </select>
+          <div style="display: flex; gap: 8px; margin-top: 8px">
+            <button class="small btn" id="addEventBtn">Add</button>
+          </div>
+
+          <hr
+            style="
+              margin: 12px 0;
+              border: none;
+              border-top: 1px solid rgba(255, 255, 255, 0.03);
+            "
+          />
+
+          <h3>Certificates</h3>
+          <label>Certificate Title</label>
+          <input id="certTitle" type="text" placeholder="Course / Workshop" />
+          <label>Category</label>
+          <select id="certCat">
+            <option value="workshop">Workshop</option>
+            <option value="hackathon">Hackathon</option>
+            <option value="internship">Internship</option>
+            <option value="course">Course</option>
+          </select>
+          <label>Upload File (PDF/Image)</label>
+          <input id="certFile" type="file" accept=".pdf,image/*" />
+          <div style="display: flex; gap: 8px; margin-top: 8px">
+            <button class="small btn" id="addCertBtn">Add Certificate</button>
+            <button class="small muted-btn" id="clearCertsBtn">Clear</button>
+          </div>
+
+          <hr
+            style="
+              margin: 12px 0;
+              border: none;
+              border-top: 1px solid rgba(255, 255, 255, 0.03);
+            "
+          />
+
+          <h3>Sharing & Stats</h3>
+          <label>GitHub Username (for live stats)</label>
+          <input id="githubUser" type="text" placeholder="githubusername" />
+          <div style="display: flex; gap: 8px; margin-top: 8px">
+            <button class="small btn" id="fetchGithubBtn">
+              Fetch GitHub Stats
+            </button>
+            <button class="small muted-btn" id="clearLocalBtn">
+              Clear Storage
+            </button>
+          </div>
+
+          <div class="bottom-row">
+            <button class="small btn" id="saveBtn">Save to Local</button>
+            <button class="small ghost" id="generateQRBtn">Generate QR</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Preview -->
+        <div class="preview card" id="portfolioPreview">
+          <!-- Profile top -->
+          <div class="profile-top">
+            <div class="avatar" id="avatarWrap">
+              <img id="avatarImg" alt="avatar" src="dp.jpg" />
+            </div>
+            <div class="p-meta">
+              <h2 id="displayName">Aaryan</h2>
+              <p id="displayHeadline" class="muted">
+                Your short headline or role
+              </p>
+              <p id="displayContact" class="muted">email • phone</p>
+              <div class="bottom-row" style="margin-top: 8px">
+                <div class="qr-canvas" id="qrCanvasWrap"></div>
+                <div style="flex: 1">
+                  <div style="font-size: 13px; color: var(--muted)">
+                    Shareable Link
+                  </div>
+                  <div
+                    id="shareLink"
+                    style="
+                      font-size: 13px;
+                      color: var(--accent-1);
+                      word-break: break-all;
+                    "
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills -->
+          <div>
+            <h3 style="margin: 0 0 8px 0; color: var(--accent-1)">Skills</h3>
+            <div id="skillsWrap" class="skills">
+              <!-- skill items injected here -->
+            </div>
+          </div>
+
+          <!-- Projects -->
+          <div style="margin-top: 12px">
+            <h3 style="color: var(--accent-1)">Projects</h3>
+            <div id="projectsWrap" class="projects-grid">
+              <!-- project cards injected -->
+            </div>
+          </div>
+
+          <!-- Certificates -->
+          <div style="margin-top: 12px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <h3 style="color: var(--accent-1)">Certificates</h3>
+              <div class="cert-filters" id="certFilters">
+                <button class="muted-btn" data-filter="all">All</button>
+                <button class="muted-btn" data-filter="workshop">
+                  Workshops
+                </button>
+                <button class="muted-btn" data-filter="hackathon">
+                  Hackathons
+                </button>
+                <button class="muted-btn" data-filter="internship">
+                  Internships
+                </button>
+                <button class="muted-btn" data-filter="course">Courses</button>
+              </div>
+            </div>
+
+            <div id="certsWrap" class="cert-list" style="margin-top: 8px">
+              <!-- cert items -->
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div style="margin-top: 12px">
+            <h3 style="color: var(--accent-1)">Timeline</h3>
+            <div id="timelineWrap" class="timeline">
+              <!-- events -->
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div style="margin-top: 12px">
+            <h3 style="color: var(--accent-1)">Live Stats</h3>
+            <div id="statsWrap" class="stats">
+              <div class="stat">
+                <h4 id="ghRepos">-</h4>
+                <p>Public Repos</p>
+              </div>
+              <div class="stat">
+                <h4 id="ghFollowers">-</h4>
+                <p>Followers</p>
+              </div>
+              <div class="stat">
+                <h4 id="ghStars">-</h4>
+                <p>Total Stars</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* -----------------------
+       Initialization & state
+       ----------------------- */
+      const state = {
+        profile: {
+          name: "Aaryann",
+          email: "",
+          phone: "",
+          photo: "dp.jpg",
+          headline: "Add a short headline",
+        },
+        skills: [], // {name, level}
+        projects: [], // {title,desc,link}
+        events: [], // {title,date,type}
+        certificates: [], // {title,category,dataUrl,filename}
+        github: { user: "", repos: 0, followers: 0, stars: 0 },
+      };
+
+      // DOM refs
+      const inputName = document.getElementById("inputName");
+      const inputEmail = document.getElementById("inputEmail");
+      const inputPhone = document.getElementById("inputPhone");
+      const inputPhoto = document.getElementById("inputPhoto");
+      const inputHeadline = document.getElementById("inputHeadline");
+      const skillsWrap = document.getElementById("skillsWrap");
+      const projectsWrap = document.getElementById("projectsWrap");
+      const certsWrap = document.getElementById("certsWrap");
+      const timelineWrap = document.getElementById("timelineWrap");
+      const avatarImg = document.getElementById("avatarImg");
+      const displayName = document.getElementById("displayName");
+      const displayHeadline = document.getElementById("displayHeadline");
+      const displayContact = document.getElementById("displayContact");
+      const shareLink = document.getElementById("shareLink");
+      const qrCanvasWrap = document.getElementById("qrCanvasWrap");
+
+      const githubUserInput = document.getElementById("githubUser");
+      const ghReposEl = document.getElementById("ghRepos");
+      const ghFollowersEl = document.getElementById("ghFollowers");
+      const ghStarsEl = document.getElementById("ghStars");
+
+      /* -----------------------
+       Utilities
+       ----------------------- */
+      function saveToLocal() {
+        localStorage.setItem("student_portfolio", JSON.stringify(state));
+        showToast("Saved to localStorage");
+        renderAll();
+      }
+
+      function loadFromLocal() {
+        const raw = localStorage.getItem("student_portfolio");
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            Object.assign(state, parsed);
+          } catch (e) {
+            console.error("Parse error", e);
+          }
+        }
+      }
+
+      function resetAll() {
+        if (confirm("Reset the portfolio and clear saved data?")) {
+          localStorage.removeItem("student_portfolio");
+          location.reload();
+        }
+      }
+
+      function showToast(msg) {
+        // small transient toast (simple)
+        const t = document.createElement("div");
+        t.textContent = msg;
+        Object.assign(t.style, {
+          position: "fixed",
+          right: "16px",
+          bottom: "18px",
+          background: "rgba(0,0,0,0.6)",
+          color: "#fff",
+          padding: "8px 12px",
+          borderRadius: "8px",
+          zIndex: 9999,
+        });
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2200);
+      }
+
+      /* -----------------------
+       Render functions
+       ----------------------- */
+      function renderProfile() {
+        avatarImg.src =
+          state.profile.photo || "https://via.placeholder.com/200";
+        displayName.textContent = state.profile.name || "Your Name";
+        displayHeadline.textContent = state.profile.headline || "";
+        displayContact.textContent = [state.profile.email, state.profile.phone]
+          .filter(Boolean)
+          .join(" • ");
+        inputName.value = state.profile.name || "";
+        inputEmail.value = state.profile.email || "";
+        inputPhone.value = state.profile.phone || "";
+        inputPhoto.value = state.profile.photo || "";
+        inputHeadline.value = state.profile.headline || "";
+
+        // share link is page URL (user may host it)
+        shareLink.textContent = location.href;
+      }
+
+      function renderSkills() {
+        skillsWrap.innerHTML = "";
+        if (state.skills.length === 0) {
+          skillsWrap.innerHTML = `<div style="color:var(--muted)">No skills added yet.</div>`;
+          return;
+        }
+        state.skills.forEach((s, idx) => {
+          const div = document.createElement("div");
+          div.className = "skill";
+          div.innerHTML = `
+          <div class="meta">${escapeHtml(s.name)}</div>
+          <div style="width:60%;display:flex;align-items:center;gap:8px;">
+            <div class="bar"><div class="fill" style="width:${Math.max(
+              0,
+              Math.min(100, parseInt(s.level || 0))
+            )}%"></div></div>
+            <div style="width:36px;text-align:right;color:var(--muted);font-size:13px">${
+              s.level
+            }%</div>
+          </div>
+          <div style="margin-left:8px">
+            <button class="muted-btn" data-idx="${idx}" data-action="remove-skill">Remove</button>
+          </div>
+        `;
+          skillsWrap.appendChild(div);
+        });
+      }
+
+      function renderProjects() {
+        projectsWrap.innerHTML = "";
+        if (state.projects.length === 0) {
+          projectsWrap.innerHTML = `<div style="color:var(--muted)">No projects yet. Add one from the form.</div>`;
+          return;
+        }
+        state.projects.forEach((p, idx) => {
+          const el = document.createElement("div");
+          el.className = "project-card";
+          el.innerHTML = `
+          <h4>${escapeHtml(p.title)}</h4>
+          <p>${escapeHtml(p.desc)}</p>
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+            <a href="${escapeAttr(p.link || "#")}" target="_blank">Open Link</a>
+            <button class="muted-btn" data-action="remove-project" data-idx="${idx}">Remove</button>
+          </div>
+        `;
+          projectsWrap.appendChild(el);
+        });
+      }
+
+      function renderCertificates(filter = "all") {
+        certsWrap.innerHTML = "";
+        const list =
+          filter === "all"
+            ? state.certificates
+            : state.certificates.filter((c) => c.category === filter);
+        if (list.length === 0) {
+          certsWrap.innerHTML = `<div style="color:var(--muted)">No certificates in this category.</div>`;
+          return;
+        }
+        list.forEach((c, idx) => {
+          const item = document.createElement("div");
+          item.className = "cert-item";
+          item.innerHTML = `${escapeHtml(
+            c.title
+          )} <span style="color:var(--muted);font-size:12px">(${
+            c.category
+          })</span> 
+          <a href="${c.dataUrl}" download="${
+            c.filename || "certificate"
+          }">Download</a>
+          <button class="muted-btn" data-idx="${idx}" data-action="remove-cert">Remove</button>
+        `;
+          certsWrap.appendChild(item);
+        });
+      }
+
+      function renderTimeline() {
+        timelineWrap.innerHTML = "";
+        const all = state.events
+          .slice()
+          .sort((a, b) => ((a.date || "") < (b.date || "") ? 1 : -1));
+        if (all.length === 0) {
+          timelineWrap.innerHTML = `<div style="color:var(--muted)">No events or achievements yet.</div>`;
+          return;
+        }
+        all.forEach((ev) => {
+          const div = document.createElement("div");
+          div.className = "event";
+          div.innerHTML = `<div class="date">${escapeHtml(
+            ev.date || ""
+          )}</div><div class="title">${escapeHtml(
+            ev.title
+          )}</div><div style="color:var(--muted);font-size:13px">${escapeHtml(
+            ev.type
+          )}</div>`;
+          timelineWrap.appendChild(div);
+        });
+      }
+
+      function renderStats() {
+        ghReposEl.textContent = state.github.repos || "-";
+        ghFollowersEl.textContent = state.github.followers || "-";
+        ghStarsEl.textContent = state.github.stars || "-";
+      }
+
+      function renderAll() {
+        renderProfile();
+        renderSkills();
+        renderProjects();
+        renderCertificates("all");
+        renderTimeline();
+        renderStats();
+      }
+
+      /* -----------------------
+       Form actions
+       ----------------------- */
+      document.getElementById("addSkillBtn").addEventListener("click", () => {
+        const name = document.getElementById("skillName").value.trim();
+        let level = parseInt(
+          document.getElementById("skillLevel").value.trim() || 0
+        );
+        if (!name) {
+          alert("Add a skill name");
+          return;
+        }
+        if (isNaN(level) || level < 0) level = 0;
+        if (level > 100) level = 100;
+        state.skills.push({ name, level });
+        document.getElementById("skillName").value = "";
+        document.getElementById("skillLevel").value = "";
+        saveToLocal();
+        renderSkills();
+      });
+      document
+        .getElementById("clearSkillsBtn")
+        .addEventListener("click", () => {
+          if (confirm("Clear all skills?")) {
+            state.skills = [];
+            saveToLocal();
+            renderSkills();
+          }
+        });
+
+      document.getElementById("addProjBtn").addEventListener("click", () => {
+        const title = document.getElementById("projTitle").value.trim();
+        const desc = document.getElementById("projDesc").value.trim();
+        const link = document.getElementById("projLink").value.trim();
+        if (!title) {
+          alert("Project title required");
+          return;
+        }
+        state.projects.push({ title, desc, link });
+        document.getElementById("projTitle").value = "";
+        document.getElementById("projDesc").value = "";
+        document.getElementById("projLink").value = "";
+        saveToLocal();
+        renderProjects();
+      });
+      document.getElementById("clearProjBtn").addEventListener("click", () => {
+        if (confirm("Clear all projects?")) {
+          state.projects = [];
+          saveToLocal();
+          renderProjects();
+        }
+      });
+
+      document.getElementById("addEventBtn").addEventListener("click", () => {
+        const title = document.getElementById("evTitle").value.trim();
+        const date = document.getElementById("evDate").value.trim();
+        const type = document.getElementById("evType").value;
+        if (!title) {
+          alert("Event/Achievement title required");
+          return;
+        }
+        state.events.push({ title, date, type });
+        document.getElementById("evTitle").value = "";
+        document.getElementById("evDate").value = "";
+        saveToLocal();
+        renderTimeline();
+      });
+
+      document
+        .getElementById("addCertBtn")
+        .addEventListener("click", async () => {
+          const title = document.getElementById("certTitle").value.trim();
+          const category = document.getElementById("certCat").value;
+          const fileInput = document.getElementById("certFile");
+          if (!title) {
+            alert("Certificate title required");
+            return;
+          }
+          if (fileInput.files.length === 0) {
+            alert("Please upload a certificate file (PDF or image)");
+            return;
+          }
+
+          const file = fileInput.files[0];
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            state.certificates.push({
+              title,
+              category,
+              dataUrl: e.target.result,
+              filename: file.name,
+            });
+            document.getElementById("certTitle").value = "";
+            fileInput.value = "";
+            saveToLocal();
+            renderCertificates();
+          };
+          reader.readAsDataURL(file);
+        });
+
+      document.getElementById("clearCertsBtn").addEventListener("click", () => {
+        if (confirm("Clear all certificates?")) {
+          state.certificates = [];
+          saveToLocal();
+          renderCertificates();
+        }
+      });
+
+      // save basic profile
+      document.getElementById("saveBtn").addEventListener("click", () => {
+        state.profile.name = inputName.value.trim() || "Your Name";
+        state.profile.email = inputEmail.value.trim();
+        state.profile.phone = inputPhone.value.trim();
+        state.profile.photo =
+          inputPhoto.value.trim() || "https://via.placeholder.com/200";
+        state.profile.headline = inputHeadline.value.trim() || "";
+        saveToLocal();
+        renderAll();
+      });
+
+      // GitHub fetch
+      document
+        .getElementById("fetchGithubBtn")
+        .addEventListener("click", async () => {
+          const user = githubUserInput.value.trim();
+          if (!user) {
+            alert("Enter GitHub username");
+            return;
+          }
+          await fetchGithubStats(user);
+        });
+
+      async function fetchGithubStats(user) {
+        try {
+          ghReposEl.textContent = "…";
+          ghFollowersEl.textContent = "…";
+          ghStarsEl.textContent = "…";
+          const uRes = await fetch(
+            `https://api.github.com/users/${encodeURIComponent(user)}`
+          );
+          if (!uRes.ok) {
+            throw new Error("GitHub user not found");
+          }
+          const uJson = await uRes.json();
+          const reposRes = await fetch(uJson.repos_url + "?per_page=100");
+          const repos = await reposRes.json();
+          const totalStars = repos.reduce(
+            (acc, r) => acc + (r.stargazers_count || 0),
+            0
+          );
+          state.github = {
+            user,
+            repos: uJson.public_repos || repos.length,
+            followers: uJson.followers || 0,
+            stars: totalStars,
+          };
+          saveToLocal();
+          renderStats();
+          showToast("GitHub stats updated");
+        } catch (err) {
+          alert("Error fetching GitHub: " + err.message);
+          renderStats();
+        }
+      }
+
+      /* -----------------------
+       Interactive preview handlers (delegation)
+       ----------------------- */
+      document.addEventListener("click", function (e) {
+        const t = e.target;
+        if (t.dataset && t.dataset.action) {
+          const action = t.dataset.action;
+          const idx = parseInt(t.dataset.idx);
+          if (action === "remove-skill") {
+            state.skills.splice(idx, 1);
+            saveToLocal();
+            renderSkills();
+          } else if (action === "remove-project") {
+            state.projects.splice(idx, 1);
+            saveToLocal();
+            renderProjects();
+          } else if (action === "remove-cert") {
+            // remove by matching dataUrl/filename; idx is index in rendered list filtered case -> we'll remove by title filename match
+            // Simple approach: prompt to confirm then remove matching item via title substring shown
+            const container = t.closest(".cert-item");
+            if (!container) {
+              return;
+            }
+            const title = container.textContent.split("(")[0].trim();
+            const indexToRemove = state.certificates.findIndex(
+              (c) => c.title === title
+            );
+            if (
+              indexToRemove >= 0 &&
+              confirm("Remove certificate '" + title + "'?")
+            ) {
+              state.certificates.splice(indexToRemove, 1);
+              saveToLocal();
+              renderCertificates();
+            }
+          }
+        }
+      });
+
+      // certificate filters
+      document
+        .getElementById("certFilters")
+        .addEventListener("click", function (e) {
+          const b = e.target.closest("button");
+          if (!b) return;
+          const f = b.dataset.filter || "all";
+          renderCertificates(f);
+        });
+
+      /* -----------------------
+       Theme toggle & QR / Export / Reset
+       ----------------------- */
+      const themeToggle = document.getElementById("themeToggle");
+      themeToggle.addEventListener("change", () => {
+        if (themeToggle.checked) {
+          document.body.classList.add("light");
+        } else {
+          document.body.classList.remove("light");
+        }
+      });
+
+      document.getElementById("generateQRBtn").addEventListener("click", () => {
+        // generate QR for current page URL
+        qrCanvasWrap.innerHTML = "";
+        QRCode.toCanvas(
+          shareLink.textContent || location.href,
+          { width: 88 },
+          function (err, canvas) {
+            if (err) {
+              console.error(err);
+              alert("Couldn't generate QR");
+              return;
+            }
+            qrCanvasWrap.appendChild(canvas);
+          }
+        );
+      });
+
+      document
+        .getElementById("exportPdfBtn")
+        .addEventListener("click", async () => {
+          // export the preview area as PDF using jsPDF html
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF("p", "pt", "a4");
+          const el = document.getElementById("portfolioPreview");
+          // small instruction: set windowWidth to make layout stable
+          await pdf.html(el, {
+            x: 20,
+            y: 20,
+            width: 560,
+            windowWidth: 1000,
+            callback: (doc) => {
+              doc.save(
+                `portfolio_${(state.profile.name || "user").replace(
+                  /\s+/g,
+                  "_"
+                )}.pdf`
+              );
+            },
+          });
+        });
+
+      document.getElementById("resetBtn").addEventListener("click", resetAll);
+      document.getElementById("clearLocalBtn").addEventListener("click", () => {
+        if (confirm("Clear all saved local data?")) {
+          localStorage.removeItem("student_portfolio");
+          Object.assign(state, {
+            profile: {
+              name: "Your Name",
+              email: "",
+              phone: "",
+              photo: "https://via.placeholder.com/200",
+              headline: "",
+            },
+            skills: [],
+            projects: [],
+            events: [],
+            certificates: [],
+            github: { user: "", repos: 0, followers: 0, stars: 0 },
+          });
+          renderAll();
+        }
+      });
+
+      /* -----------------------
+       Escape helpers for safety (basic)
+       ----------------------- */
+      function escapeHtml(s) {
+        return String(s || "").replace(
+          /[&<>"']/g,
+          (m) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[m])
+        );
+      }
+      function escapeAttr(s) {
+        return (s || "").replace(/"/g, "&quot;");
+      }
+
+      /* -----------------------
+       Keyboard shortcuts (save quick)
+       ----------------------- */
+      window.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+          e.preventDefault();
+          saveToLocal();
+          showToast("Saved");
+        }
+      });
+
+      /* -----------------------
+       Initial load
+       ----------------------- */
+      loadFromLocal();
+      // If no profile present set default
+      state.profile = Object.assign(
+        {
+          name: "Your Name",
+          email: "",
+          phone: "",
+          photo: "https://via.placeholder.com/200",
+          headline: "Add a headline",
+        },
+        state.profile || {}
+      );
+      renderAll();
+
+      /* -----------------------
+       Utility: small UI wiring to keep profile editable live
+       ----------------------- */
+      // live update on input changes
+      [inputName, inputEmail, inputPhone, inputPhoto, inputHeadline].forEach(
+        (el) => {
+          el.addEventListener("input", () => {
+            state.profile.name = inputName.value || "Your Name";
+            state.profile.email = inputEmail.value;
+            state.profile.phone = inputPhone.value;
+            state.profile.photo =
+              inputPhoto.value || "https://via.placeholder.com/200";
+            state.profile.headline = inputHeadline.value;
+            renderProfile();
+          });
+        }
+      );
+
+      // show stored share link / generate QR on load if previously generated
+      // if state.github.user exists from previous save, show stats
+      (async function restoreGitHub() {
+        if (state.github && state.github.user) {
+          githubUserInput.value = state.github.user;
+          renderStats();
+        }
+      })();
+
+      // Small improvements: clicking shareLink copies URL
+      shareLink.addEventListener("click", () => {
+        navigator.clipboard
+          ?.writeText(shareLink.textContent || location.href)
+          .then(() => showToast("Link copied"));
+      });
+
+      // On initial load, generate QR for current page (small fade)
+      QRCode.toCanvas(location.href, { width: 88 }, function (err, canvas) {
+        if (!err) qrCanvasWrap.appendChild(canvas);
+      });
+    </script>
+  </body>
+</html>

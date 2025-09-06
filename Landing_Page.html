@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Smart Hub</title>
+    <link rel="stylesheet" href="Landing_Page.css" />
+  </head>
+
+  <body class="light">
+    <!-- Navbar -->
+    <nav>
+      <div class="logo">Student Smart Hub</div>
+      <div class="mode-toggle" onclick="toggleMode()">🌙</div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>Your One-Stop Hub for Student Growth</h1>
+      <p>
+        Discover events, track progress, earn badges, and connect with mentors —
+        all in one place.
+      </p>
+      <div class="cta-btns">
+        <button class="btn-primary" id="joinStudent">Join as Student</button>
+        <button class="btn-secondary" id="joinMentor">Join as Mentor</button>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+      <h2>Key Features</h2>
+      <div class="feature-cards">
+        <div class="glass-card">
+          <i>🎉</i>
+          <h3>Events</h3>
+          <p>Explore and apply for upcoming competitions & hackathons.</p>
+        </div>
+        <div class="glass-card">
+          <i>📊</i>
+          <h3>Progress Tracking</h3>
+          <p>Monitor your journey with detailed progress reports.</p>
+        </div>
+        <div class="glass-card">
+          <i>🏅</i>
+          <h3>Badges</h3>
+          <p>Earn achievements for your accomplishments.</p>
+        </div>
+        <div class="glass-card">
+          <i>📜</i>
+          <h3>Certificates</h3>
+          <p>Access all your certificates at one place.</p>
+        </div>
+        <div class="glass-card">
+          <i>🤝</i>
+          <h3>Community</h3>
+          <p>Connect and collaborate with peers and mentors.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Events Section -->
+    <section class="events">
+      <h2>Upcoming Events</h2>
+      <div class="event-cards" id="events-list"></div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section class="leaderboard">
+      <h2>Top Performers</h2>
+      <div class="leaders" id="leaderboard-list"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 Student Smart Hub</p>
+      <div>
+        <a href="#">About</a> | <a href="#">Contact</a> |
+        <a href="#">Privacy</a>
+      </div>
+      <div style="margin-top: 0.5rem">
+        <a href="#">🌐 Facebook</a>
+        <a href="#">🐦 Twitter</a>
+        <a href="#">📸 Instagram</a>
+      </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+      // Dark/Light Mode Toggle
+      function toggleMode() {
+        document.body.classList.toggle("light");
+        const btn = document.querySelector(".mode-toggle");
+        btn.textContent = document.body.classList.contains("light")
+          ? "🌙"
+          : "☀️";
+      }
+
+      // Dummy Data
+      const events = [
+        { title: "AI Hackathon", date: "12 Sep 2025" },
+        { title: "Web Dev Workshop", date: "20 Sep 2025" },
+        { title: "Cultural Fest", date: "25 Sep 2025" },
+        { title: "Startup Pitch", date: "30 Sep 2025" },
+      ];
+      const leaderboard = [
+        { name: "Aryan Sharma", dept: "CSE", rank: 1 },
+        { name: "Priya Verma", dept: "ECE", rank: 2 },
+        { name: "Rohan Singh", dept: "IT", rank: 3 },
+      ];
+
+      // Render Events
+      const eventsContainer = document.getElementById("events-list");
+      events.forEach((ev) => {
+        const card = document.createElement("div");
+        card.className = "event";
+        card.innerHTML = `<h3>${ev.title}</h3><p>Date: ${ev.date}</p><button class="btn-primary">Apply</button>`;
+        eventsContainer.appendChild(card);
+      });
+
+      // Render Leaderboard
+      const leaderboardContainer = document.getElementById("leaderboard-list");
+      leaderboard.forEach((lb) => {
+        const div = document.createElement("div");
+        div.className = "leader";
+        let crown = lb.rank === 1 ? "👑" : lb.rank === 2 ? "🥈" : "🥉";
+        div.innerHTML = `<h3>${crown} ${lb.name}</h3><p>Dept: ${lb.dept}</p><p>Rank: ${lb.rank}</p>`;
+        leaderboardContainer.appendChild(div);
+      });
+
+      // Redirect buttons
+      document
+        .getElementById("joinStudent")
+        .addEventListener("click", function () {
+          window.location.href = "event.html";
+        });
+
+      document
+        .getElementById("joinMentor")
+        .addEventListener("click", function () {
+          window.location.href = "mentor_home.html";
+        });
+    </script>
+  </body>
+</html>

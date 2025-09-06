@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Portal Home</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="event.css" />
+  </head>
+  <body>
+    <!-- Top navigation -->
+    <nav>
+      <div class="logo">StudentHub</div>
+      <div class="nav-links">
+        <a href="Dashboard.html">Dashboard</a>
+        <a href="community.html">Community</a>
+        <a href="profile.html">Profile</a>
+      </div>
+      <div style="display: flex; gap: 15px; align-items: center">
+        <div class="search-bar">
+          <input type="text" id="searchInput" placeholder="Search events..." />
+        </div>
+        <div class="theme-switch">
+          <span>🌞/🌙</span>
+          <label class="switch">
+            <input type="checkbox" id="themeToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Left sidebar -->
+      <div class="sidebar-left">
+        <img src="dp.jpg" alt="Profile Picture" />
+        <h3>Aaryann</h3>
+        <p>Computer Science</p>
+      </div>
+
+      <!-- Center main content -->
+      <div class="main-content" id="eventsList"></div>
+
+      <!-- Right sidebar -->
+      <div class="sidebar-right">
+        <div>
+          <h4>Recent Activity</h4>
+          <div class="activity-log" id="activityLog"></div>
+        </div>
+        <div>
+          <h4>Leaderboard</h4>
+          <div class="leaderboard" id="leaderboardList"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Sample events
+      const events = [
+        {
+          name: "Hackathon 2025",
+          date: "2025-10-01",
+          type: "Hackathon",
+          desc: "Join a 48-hour hackathon developing innovative solutions. Basic coding skills required.",
+          skills: "Skills: Programming, Problem-Solving, Teamwork",
+          tech: "Technologies: Python, JavaScript, Node.js, React",
+          duration: "Duration: 48 hours",
+          team: "Team Size: 2-4",
+          prize: "Prize: $2000 + Certificates",
+          thumbnail: "maxresdefault.jpg",
+        },
+        {
+          name: "Code-Sphere 2025",
+          date: "2025-10-01",
+          type: "Hackathon",
+          desc: "Join a 72-hour hackathon developing innovative solutions. high coding skills required.",
+          skills: "Skills: Programming, Problem-Solving, Teamwork",
+          tech: "Technologies: c++, JavaScript, Node.js, React, MongoDB",
+          duration: "Duration: 72 hours",
+          team: "Team Size: 4-6",
+          prize: "Prize: $16000 + Certificates",
+          thumbnail: "download.jpeg",
+        },
+        {
+          name: "AI Workshop",
+          date: "2025-09-15",
+          type: "Workshop",
+          desc: "Hands-on AI & ML workshop. Learn basics of neural networks and model training.",
+          skills: "Skills: Python, ML Basics, Linear Algebra",
+          tech: "Technologies: Python, TensorFlow, scikit-learn",
+          duration: "Duration: 6 hours",
+          team: "Individual Participation",
+          prize: "Certificate of Completion",
+          thumbnail: "https://picsum.photos/120/80?random=2",
+        },
+      ];
+
+      const activities = [
+        "Applied for Hackathon 2025",
+        "Submitted AI Project",
+        "Joined Community Event",
+        "Earned 'Top Coder' Badge",
+      ];
+
+      const leaderboard = [
+        {
+          name: "Alice",
+          pts: 150,
+          img: "https://randomuser.me/api/portraits/women/44.jpg",
+        },
+        {
+          name: "Bob",
+          pts: 140,
+          img: "https://randomuser.me/api/portraits/men/22.jpg",
+        },
+        {
+          name: "Charlie",
+          pts: 130,
+          img: "https://randomuser.me/api/portraits/men/33.jpg",
+        },
+        {
+          name: "John Doe",
+          pts: 120,
+          img: "https://randomuser.me/api/portraits/men/32.jpg",
+        },
+        {
+          name: "Eve",
+          pts: 110,
+          img: "https://randomuser.me/api/portraits/women/55.jpg",
+        },
+      ];
+
+      const eventsList = document.getElementById("eventsList");
+      const activityLog = document.getElementById("activityLog");
+      const leaderboardList = document.getElementById("leaderboardList");
+      const searchInput = document.getElementById("searchInput");
+      const themeToggle = document.getElementById("themeToggle");
+
+      function displayEvents(filteredEvents) {
+        eventsList.innerHTML = "";
+        filteredEvents.forEach((event) => {
+          const card = document.createElement("div");
+          card.classList.add("event-card");
+          card.innerHTML = `
+      <img src="${event.thumbnail}" alt="${event.name}">
+      <div class="event-info">
+        <h4>${event.name}</h4>
+        <p>${event.type} - ${event.date}</p>
+        <p>${event.desc}</p>
+        <p class="skills">${event.skills}</p>
+        <p class="skills">${event.tech}</p>
+        <p>${event.duration}</p>
+        <p>${event.team}</p>
+        <p>${event.prize}</p>
+        <button class="register-btn">Register</button>
+      </div>
+    `;
+          eventsList.appendChild(card);
+
+          card.querySelector(".register-btn").addEventListener("click", () => {
+            alert(`You have registered for "${event.name}"!`);
+          });
+        });
+      }
+
+      function displayActivities() {
+        activityLog.innerHTML = "";
+        activities.forEach((act) => {
+          const div = document.createElement("div");
+          div.classList.add("activity-item");
+          div.textContent = act;
+          activityLog.appendChild(div);
+        });
+      }
+
+      function displayLeaderboard() {
+        leaderboardList.innerHTML = "";
+        leaderboard.forEach((user) => {
+          const div = document.createElement("div");
+          div.classList.add("leaderboard-item");
+          if (user.name === "John Doe") div.classList.add("highlight");
+          div.innerHTML = `
+      <img src="${user.img}" alt="${user.name}">
+      <div class="user-info">
+        <span>${user.name}</span>
+        <span>${user.pts} pts</span>
+      </div>
+      <div class="badge">Top</div>
+    `;
+          leaderboardList.appendChild(div);
+        });
+      }
+
+      // Search events
+      searchInput.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = events.filter((ev) =>
+          ev.name.toLowerCase().includes(term)
+        );
+        displayEvents(filtered);
+      });
+
+      // Theme toggle
+      themeToggle.addEventListener("change", () => {
+        document.body.classList.toggle("dark-theme");
+      });
+
+      // Initialize
+      displayEvents(events);
+      displayActivities();
+      displayLeaderboard();
+    </script>
+  </body>
+</html>
